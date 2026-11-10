@@ -3,6 +3,8 @@ import { onMounted, reactive, ref } from 'vue'
 import perangkatDaerahApi from '../api/perangkatDaerah'
 import { useAuthStore } from '../stores/auth'
 import ConfirmModal from '../components/ConfirmModal.vue'
+import DataTable from '../components/DataTable.vue'
+import PageHeader from '../components/PageHeader.vue'
 
 const auth = useAuthStore()
 
@@ -20,6 +22,13 @@ const form = reactive({
   kode: '',
   nama: '',
 })
+
+const columns = [
+  { key: 'kode', label: 'Kode' },
+  { key: 'nama', label: 'Nama instansi' },
+  { key: 'jumlah_pegawai', label: 'Pegawai', class: 'text-center' },
+  { key: 'jumlah_kendaraan', label: 'Kendaraan', class: 'text-center' },
+]
 
 async function load() {
   loading.value = true
@@ -97,96 +106,111 @@ function fieldError(field) {
 
 <template>
   <div>
-    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
-      <div>
-        <h4 class="mb-1">Perangkat Daerah</h4>
-        <p class="text-secondary mb-0">Instansi pengguna / pemilik kendaraan dinas</p>
-      </div>
+    <PageHeader
+      eyebrow="Data utama"
+      title="Perangkat daerah"
+      subtitle="Instansi pengguna / pemilik kendaraan dinas"
+    >
       <button v-if="auth.isAdmin" class="btn btn-primary" @click="bukaTambah">
-        + Tambah Perangkat Daerah
+        <i class="bi bi-plus-lg me-1"></i>Tambah perangkat daerah
       </button>
+    </PageHeader>
+
+    <div v-if="infoPesan" class="alert alert-warning d-flex gap-2 align-items-start" role="alert">
+      <i class="bi bi-exclamation-triangle mt-1"></i><span>{{ infoPesan }}</span>
     </div>
 
-    <div v-if="infoPesan" class="alert alert-warning">{{ infoPesan }}</div>
-
     <!-- form tambah/ubah -->
-    <div v-if="showForm" class="card border-0 shadow-sm mb-3 border-start border-primary border-4">
+    <div v-if="showForm" class="card mb-3">
+      <div class="card-header fw-bold">{{ editingId ? 'Ubah' : 'Tambah' }} perangkat daerah</div>
       <div class="card-body">
-        <h6 class="mb-3">{{ editingId ? 'Ubah' : 'Tambah' }} Perangkat Daerah</h6>
-        <form class="row g-3" @submit.prevent="submit">
-          <div class="col-md-3">
-            <label class="form-label">Kode <span class="text-danger">*</span></label>
-            <input
-              v-model.trim="form.kode"
-              class="form-control"
-              :class="{ 'is-invalid': fieldError('kode') }"
-              placeholder="DISDIK"
-            />
-            <div class="invalid-feedback">{{ fieldError('kode') }}</div>
+        <form @submit.prevent="submit">
+          <div class="row g-3">
+            <div class="col-md-3">
+              <label class="form-label" for="kode-pd">Kode <span class="text-danger">*</span></label>
+              <input
+                id="kode-pd"
+                v-model.trim="form.kode"
+                class="form-control"
+                :class="{ 'is-invalid': fieldError('kode') }"
+                placeholder="Masukkan kode PD"
+              />
+              <div class="invalid-feedback">{{ fieldError('kode') }}</div>
+              <div class="form-text">Contoh: DISDIK, DISKES</div>
+            </div>
+            <div class="col-md-9">
+              <label class="form-label" for="nama-pd">Nama instansi <span class="text-danger">*</span></label>
+              <input
+                id="nama-pd"
+                v-model.trim="form.nama"
+                class="form-control"
+                :class="{ 'is-invalid': fieldError('nama') }"
+                placeholder="Masukkan nama instansi"
+              />
+              <div class="invalid-feedback">{{ fieldError('nama') }}</div>
+              <div class="form-text">Contoh: Dinas Pendidikan</div>
+            </div>
           </div>
-          <div class="col-md-6">
-            <label class="form-label">Nama Instansi <span class="text-danger">*</span></label>
-            <input
-              v-model.trim="form.nama"
-              class="form-control"
-              :class="{ 'is-invalid': fieldError('nama') }"
-              placeholder="Dinas Pendidikan"
-            />
-            <div class="invalid-feedback">{{ fieldError('nama') }}</div>
-          </div>
-          <div class="col-md-3 d-flex align-items-end gap-2">
+
+          <div class="form-actions">
             <button type="submit" class="btn btn-primary" :disabled="saving">
               <span v-if="saving" class="spinner-border spinner-border-sm me-1"></span>
               Simpan
             </button>
-            <button type="button" class="btn btn-secondary" @click="showForm = false">Batal</button>
+            <button type="button" class="btn btn-soft" @click="showForm = false">Batal</button>
           </div>
         </form>
       </div>
     </div>
 
-    <div class="card border-0 shadow-sm">
-      <div v-if="loading" class="text-center py-5">
-        <div class="spinner-border text-primary"></div>
-      </div>
+    <DataTable
+      :columns="columns"
+      :rows="items"
+      :loading="loading"
+      empty-icon="bi-buildings"
+      empty-title="Belum ada perangkat daerah"
+      empty-text="Perangkat daerah akan tampil di sini setelah ditambahkan."
+    >
+      <template #cell-kode="{ row }"><span class="role-tag">{{ row.kode }}</span></template>
+      <template #cell-nama="{ row }"><span class="fw-semibold text-body">{{ row.nama }}</span></template>
+      <template #cell-jumlah_pegawai="{ row }"><span class="fw-semibold">{{ row.jumlah_pegawai ?? 0 }}</span></template>
+      <template #cell-jumlah_kendaraan="{ row }"><span class="fw-semibold">{{ row.jumlah_kendaraan ?? 0 }}</span></template>
 
-      <div v-else class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-          <thead class="table-light">
-            <tr>
-              <th style="width: 140px">Kode</th>
-              <th>Nama Instansi</th>
-              <th class="text-center">Pegawai</th>
-              <th class="text-center">Kendaraan</th>
-              <th v-if="auth.isAdmin" class="text-end">Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="pd in items" :key="pd.id">
-              <td><span class="badge bg-secondary">{{ pd.kode }}</span></td>
-              <td class="fw-semibold">{{ pd.nama }}</td>
-              <td class="text-center">{{ pd.jumlah_pegawai ?? 0 }}</td>
-              <td class="text-center">{{ pd.jumlah_kendaraan ?? 0 }}</td>
-              <td v-if="auth.isAdmin" class="text-end">
-                <div class="btn-group btn-group-sm">
-                  <button class="btn btn-outline-primary" @click="bukaEdit(pd)">Edit</button>
-                  <button class="btn btn-outline-danger" @click="toDelete = pd">Hapus</button>
-                </div>
-              </td>
-            </tr>
-            <tr v-if="items.length === 0">
-              <td :colspan="auth.isAdmin ? 5 : 4" class="text-center text-secondary py-5">
-                Belum ada data perangkat daerah.
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+      <template #card="{ row }">
+        <div class="d-flex justify-content-between align-items-center gap-2">
+          <span class="fw-bold">{{ row.nama }}</span>
+          <span class="role-tag">{{ row.kode }}</span>
+        </div>
+        <div class="small text-secondary mt-1">
+          <i class="bi bi-people me-1"></i>{{ row.jumlah_pegawai ?? 0 }} pegawai ·
+          <i class="bi bi-car-front me-1"></i>{{ row.jumlah_kendaraan ?? 0 }} kendaraan
+        </div>
+      </template>
+
+      <template #actions="{ row }">
+        <div class="row-actions">
+          <button
+            v-if="auth.isAdmin"
+            class="icon-btn"
+            aria-label="Ubah" title="Ubah"
+            @click="bukaEdit(row)"
+          >
+            <i class="bi bi-pencil"></i>
+          </button>
+          <button v-if="auth.isAdmin" class="icon-btn danger" aria-label="Hapus" title="Hapus" @click="toDelete = row">
+            <i class="bi bi-trash3"></i>
+          </button>
+        </div>
+      </template>
+
+      <template #empty>
+        <button v-if="auth.isAdmin" class="btn btn-primary btn-sm" @click="bukaTambah">Tambah perangkat daerah</button>
+      </template>
+    </DataTable>
 
     <ConfirmModal
       :visible="!!toDelete"
-      title="Hapus Perangkat Daerah"
+      title="Hapus perangkat daerah"
       :message="`Hapus ${toDelete?.nama}? PD yang masih memiliki pegawai atau kendaraan tidak dapat dihapus.`"
       confirm-label="Ya, hapus"
       :busy="deleting"
