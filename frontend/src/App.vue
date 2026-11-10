@@ -1,9 +1,32 @@
 <script setup>
-import { useRouter } from 'vue-router'
+import { computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from './stores/auth'
 
+const route = useRoute()
 const router = useRouter()
 const auth = useAuthStore()
+
+const nav = [
+  { name: 'dashboard', label: 'Dashboard', short: 'Beranda', icon: 'bi-grid-1x2', match: '/' },
+  { name: 'kendaraan.index', label: 'Kendaraan', short: 'Kendaraan', icon: 'bi-car-front', match: '/kendaraan' },
+  { name: 'pegawai.index', label: 'Pegawai', short: 'Pegawai', icon: 'bi-people', match: '/pegawai' },
+  { name: 'perangkat-daerah.index', label: 'Perangkat daerah', short: 'PD', icon: 'bi-buildings', match: '/perangkat-daerah' },
+  { name: 'laporan.index', label: 'Laporan', short: 'Laporan', icon: 'bi-bar-chart-line', match: '/laporan' },
+]
+
+function isActive(item) {
+  return item.match === '/' ? route.path === '/' : route.path.startsWith(item.match)
+}
+
+const initials = computed(() =>
+  (auth.user?.name || '?')
+    .split(' ')
+    .map((s) => s[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase(),
+)
 
 async function handleLogout() {
   await auth.logout()
@@ -13,65 +36,65 @@ async function handleLogout() {
 
 <template>
   <div v-if="auth.isAuthenticated">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
-      <div class="container">
-        <router-link :to="{ name: 'dashboard' }" class="navbar-brand fw-semibold">
-          🚗 Sistem KDO
+    <header class="topbar">
+      <div class="container topbar-inner">
+        <router-link :to="{ name: 'dashboard' }" class="brand">
+          <span class="brand-mark"><i class="bi bi-car-front-fill"></i></span>
+          <span class="brand-text">
+            <strong>Sistem KDO</strong>
+            <small class="d-none d-sm-block">Kendaraan Dinas Operasional</small>
+          </span>
         </router-link>
 
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarUtama"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
+        <nav class="topnav d-none d-lg-flex">
+          <router-link
+            v-for="item in nav"
+            :key="item.name"
+            :to="{ name: item.name }"
+            class="topnav-link"
+            :class="{ active: isActive(item) }"
+          >
+            <i :class="['bi', item.icon]"></i>{{ item.label }}
+          </router-link>
+        </nav>
 
-        <div id="navbarUtama" class="collapse navbar-collapse">
-          <ul class="navbar-nav me-auto">
-            <li class="nav-item">
-              <router-link class="nav-link" :to="{ name: 'dashboard' }">Dashboard</router-link>
+        <div class="dropdown topbar-user">
+          <button class="user-chip" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <span class="user-avatar">{{ initials }}</span>
+            <span class="d-none d-sm-inline">{{ auth.user?.name }}</span>
+            <span class="role-tag d-none d-sm-inline">{{ auth.user?.role }}</span>
+            <i class="bi bi-chevron-down small text-secondary"></i>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li class="px-3 py-2 d-sm-none">
+              <div class="fw-semibold">{{ auth.user?.name }}</div>
+              <span class="role-tag">{{ auth.user?.role }}</span>
             </li>
-            <li class="nav-item">
-              <router-link class="nav-link" :to="{ name: 'kendaraan.index' }">Kendaraan</router-link>
-            </li>
-            <li class="nav-item">
-              <router-link class="nav-link" :to="{ name: 'pegawai.index' }">Pegawai</router-link>
-            </li>
-            <li class="nav-item">
-              <router-link class="nav-link" :to="{ name: 'perangkat-daerah.index' }">Perangkat Daerah</router-link>
-            </li>
-            <li class="nav-item">
-              <router-link class="nav-link" :to="{ name: 'laporan.index' }">Laporan</router-link>
-            </li>
-          </ul>
-
-          <ul class="navbar-nav">
-            <li class="nav-item dropdown">
-              <a
-                class="nav-link dropdown-toggle text-white"
-                href="#"
-                role="button"
-                data-bs-toggle="dropdown"
-              >
-                {{ auth.user?.name }}
-                <span class="badge bg-light text-primary ms-1">{{ auth.user?.role }}</span>
-              </a>
-              <ul class="dropdown-menu dropdown-menu-end">
-                <li>
-                  <button class="dropdown-item" @click="handleLogout">Logout</button>
-                </li>
-              </ul>
+            <li>
+              <button class="dropdown-item" @click="handleLogout">
+                <i class="bi bi-box-arrow-right me-2"></i>Keluar
+              </button>
             </li>
           </ul>
         </div>
       </div>
-    </nav>
+    </header>
 
-    <main class="container pb-5">
+    <main class="container app-main">
       <router-view />
     </main>
+
+    <nav class="bottomnav d-lg-none" aria-label="Navigasi utama">
+      <router-link
+        v-for="item in nav"
+        :key="item.name"
+        :to="{ name: item.name }"
+        :class="{ active: isActive(item) }"
+      >
+        <i :class="['bi', item.icon]"></i>
+        <span>{{ item.short }}</span>
+      </router-link>
+    </nav>
   </div>
 
   <router-view v-else />
