@@ -1,0 +1,559 @@
+name: 'Pegawai (PNS)'
+description: ''
+endpoints:
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/pegawai
+    metadata:
+      custom: []
+      groupName: 'Pegawai (PNS)'
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Daftar pegawai (PNS)'
+      description: 'Daftar pegawai negeri sipil dengan pencarian, filter perangkat daerah, dan paginasi.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters:
+      search:
+        custom: []
+        name: search
+        description: 'Opsional, cari berdasarkan nama/NIP/jabatan.'
+        required: false
+        example: budi
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      perangkat_daerah_id:
+        custom: []
+        name: perangkat_daerah_id
+        description: 'Opsional, filter ID perangkat daerah.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      per_page:
+        custom: []
+        name: per_page
+        description: 'Opsional, jumlah item per halaman (maks 100).'
+        required: false
+        example: 15
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      search: budi
+      perangkat_daerah_id: 1
+      per_page: 15
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":[{"id":1,"nama":"Budi Santoso","nip":"197504121998031001","jabatan":"Kepala Bagian Umum","golongan":"IV\/b","perangkat_daerah":{"id":1,"kode":"SETDA","nama":"Sekretariat Daerah"},"jumlah_kendaraan_ditangani":1,"dibuat_pada":"2026-11-10 05:25:13","diubah_pada":"2026-11-10 05:25:13"}],"links":{"first":"http:\/\/localhost:8000\/api\/v1\/pegawai?page=1","last":"http:\/\/localhost:8000\/api\/v1\/pegawai?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","page":null,"active":false},{"url":"http:\/\/localhost:8000\/api\/v1\/pegawai?page=1","label":"1","page":1,"active":true},{"url":null,"label":"Next &raquo;","page":null,"active":false}],"path":"http:\/\/localhost:8000\/api\/v1\/pegawai","per_page":15,"to":1,"total":1}}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          x-ratelimit-limit: '60'
+          x-ratelimit-remaining: '59'
+          vary: Origin
+        description: null
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 1|gEoI9DUHxBpwn6CbAnGL13XL2yjZpxkJrgOsF14h9ea314fb'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/v1/pegawai/{id}'
+    metadata:
+      custom: []
+      groupName: 'Pegawai (PNS)'
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Detail pegawai (PNS)'
+      description: |-
+        Mengambil satu data pegawai berdasarkan ID, termasuk perangkat daerah dan
+        jumlah kendaraan yang ditangani.
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'ID pegawai.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1,"nama":"Budi Santoso","nip":"197504121998031001","jabatan":"Kepala Bagian Umum","golongan":"IV\/b","perangkat_daerah":{"id":1,"kode":"SETDA","nama":"Sekretariat Daerah"},"jumlah_kendaraan_ditangani":1,"dibuat_pada":"2026-11-10 05:25:13","diubah_pada":"2026-11-10 05:25:13"}}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          x-ratelimit-limit: '60'
+          x-ratelimit-remaining: '59'
+          vary: Origin
+        description: null
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 1|gEoI9DUHxBpwn6CbAnGL13XL2yjZpxkJrgOsF14h9ea314fb'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/v1/pegawai
+    metadata:
+      custom: []
+      groupName: 'Pegawai (PNS)'
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Tambah pegawai (PNS)'
+      description: |-
+        Membuat data pegawai baru. Hanya admin. NIP harus 18 digit dan unik;
+        golongan format I/a sampai IV/e.
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      nama:
+        custom: []
+        name: nama
+        description: 'Nama lengkap pegawai.'
+        required: true
+        example: 'Nur Aisyah'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      nip:
+        custom: []
+        name: nip
+        description: 'NIP 18 digit, unik.'
+        required: true
+        example: '199410052017012005'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      jabatan:
+        custom: []
+        name: jabatan
+        description: 'Jabatan pegawai.'
+        required: true
+        example: 'Analis Kepegawaian'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      golongan:
+        custom: []
+        name: golongan
+        description: 'Golongan ruang (I/a-IV/e).'
+        required: true
+        example: III/a
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      perangkat_daerah_id:
+        custom: []
+        name: perangkat_daerah_id
+        description: 'ID perangkat daerah tempat bertugas.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      nama: 'Nur Aisyah'
+      nip: '199410052017012005'
+      jabatan: 'Analis Kepegawaian'
+      golongan: III/a
+      perangkat_daerah_id: 1
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 201
+        content: '{"data":{"id":13,"nama":"Nur Aisyah","nip":"199410052017012005"}}'
+        headers: []
+        description: sukses
+      -
+        custom: []
+        status: 422
+        content: '{"message":"...","errors":{"nip":["NIP harus tepat 18 digit angka."]}}'
+        headers: []
+        description: 'NIP tidak 18 digit'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 1|gEoI9DUHxBpwn6CbAnGL13XL2yjZpxkJrgOsF14h9ea314fb'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+    uri: 'api/v1/pegawai/{pegawai_id}'
+    metadata:
+      custom: []
+      groupName: 'Pegawai (PNS)'
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Ubah pegawai (PNS)'
+      description: 'Memperbarui data pegawai. Hanya admin.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      pegawai_id:
+        custom: []
+        name: pegawai_id
+        description: 'The ID of the pegawai.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      id:
+        custom: []
+        name: id
+        description: 'ID pegawai.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      pegawai_id: 1
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      nama:
+        custom: []
+        name: nama
+        description: 'Must not be greater than 255 characters.'
+        required: true
+        example: b
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      nip:
+        custom: []
+        name: nip
+        description: 'Must be 18 digits.'
+        required: true
+        example: '822569775137449171'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      jabatan:
+        custom: []
+        name: jabatan
+        description: 'Must not be greater than 255 characters.'
+        required: true
+        example: g
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      golongan:
+        custom: []
+        name: golongan
+        description: 'Must match the regex /^(?:I|II|III|IV)\/(?:a|b|c|d|e)$/.'
+        required: true
+        example: ':I|II|III|IV)/b'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      perangkat_daerah_id:
+        custom: []
+        name: perangkat_daerah_id
+        description: 'Must match an existing stored value.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      nama: b
+      nip: '822569775137449171'
+      jabatan: g
+      golongan: ':I|II|III|IV)/b'
+      perangkat_daerah_id: 16
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 1|gEoI9DUHxBpwn6CbAnGL13XL2yjZpxkJrgOsF14h9ea314fb'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PATCH
+    uri: 'api/v1/pegawai/{pegawai_id}'
+    metadata:
+      custom: []
+      groupName: 'Pegawai (PNS)'
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Ubah pegawai (PNS)'
+      description: 'Memperbarui data pegawai. Hanya admin.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      pegawai_id:
+        custom: []
+        name: pegawai_id
+        description: 'The ID of the pegawai.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      id:
+        custom: []
+        name: id
+        description: 'ID pegawai.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      pegawai_id: 1
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      nama:
+        custom: []
+        name: nama
+        description: 'Must not be greater than 255 characters.'
+        required: true
+        example: b
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      nip:
+        custom: []
+        name: nip
+        description: 'Must be 18 digits.'
+        required: true
+        example: '822569775137449171'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      jabatan:
+        custom: []
+        name: jabatan
+        description: 'Must not be greater than 255 characters.'
+        required: true
+        example: g
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      golongan:
+        custom: []
+        name: golongan
+        description: 'Must match the regex /^(?:I|II|III|IV)\/(?:a|b|c|d|e)$/.'
+        required: true
+        example: ':I|II|III|IV)/b'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      perangkat_daerah_id:
+        custom: []
+        name: perangkat_daerah_id
+        description: 'Must match an existing stored value.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      nama: b
+      nip: '822569775137449171'
+      jabatan: g
+      golongan: ':I|II|III|IV)/b'
+      perangkat_daerah_id: 16
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 1|gEoI9DUHxBpwn6CbAnGL13XL2yjZpxkJrgOsF14h9ea314fb'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'api/v1/pegawai/{pegawai_id}'
+    metadata:
+      custom: []
+      groupName: 'Pegawai (PNS)'
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Hapus pegawai (PNS)'
+      description: |-
+        Menghapus data pegawai. Hanya admin. Kendaraan yang ditangani pegawai
+        tersebut otomatis menjadi tanpa penanggung jawab.
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      pegawai_id:
+        custom: []
+        name: pegawai_id
+        description: 'The ID of the pegawai.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      id:
+        custom: []
+        name: id
+        description: 'ID pegawai.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      pegawai_id: 1
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 204
+        content: ''
+        headers: []
+        description: sukses
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 1|gEoI9DUHxBpwn6CbAnGL13XL2yjZpxkJrgOsF14h9ea314fb'
+    controller: null
+    method: null
+    route: null

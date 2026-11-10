@@ -1,0 +1,1895 @@
+openapi: 3.0.3
+info:
+  title: 'Sistem KDO API Documentation'
+  description: 'REST API Sistem Pengelolaan Kendaraan Dinas Operasional (KDO) Perangkat Daerah — JP-1 (20270311).'
+  version: 1.0.0
+servers:
+  -
+    url: 'http://localhost:8000'
+tags:
+  -
+    name: Autentikasi
+    description: ''
+  -
+    name: 'Kendaraan (KDO)'
+    description: ''
+  -
+    name: Laporan
+    description: ''
+  -
+    name: 'Pegawai (PNS)'
+    description: ''
+  -
+    name: 'Perangkat Daerah (PD)'
+    description: ''
+components:
+  securitySchemes:
+    default:
+      type: http
+      scheme: bearer
+      description: 'You can retrieve your token by visiting your dashboard and clicking <b>Generate API token</b>.'
+security:
+  -
+    default: []
+paths:
+  /api/v1/auth/login:
+    post:
+      summary: 'Login pengguna'
+      operationId: loginPengguna
+      description: "Login dengan email dan password untuk mendapatkan bearer token. Token\ndipakai pada seluruh endpoint lain melalui header `Authorization: Bearer {token}`."
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Login berhasil.'
+                  data:
+                    token: 1|abc...
+                    user:
+                      id: 1
+                      name: 'Administrator KDO'
+                      email: admin@kdo.test
+                      role: admin
+                properties:
+                  message:
+                    type: string
+                    example: 'Login berhasil.'
+                  data:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                        example: 1|abc...
+                      user:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                            example: 1
+                          name:
+                            type: string
+                            example: 'Administrator KDO'
+                          email:
+                            type: string
+                            example: admin@kdo.test
+                          role:
+                            type: string
+                            example: admin
+        422:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Email atau password salah.'
+                  errors:
+                    email:
+                      - 'Email atau password salah.'
+                properties:
+                  message:
+                    type: string
+                    example: 'Email atau password salah.'
+                  errors:
+                    type: object
+                    properties:
+                      email:
+                        type: array
+                        example:
+                          - 'Email atau password salah.'
+                        items:
+                          type: string
+      tags:
+        - Autentikasi
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: 'Email pengguna.'
+                  example: admin@kdo.test
+                password:
+                  type: string
+                  description: 'Password pengguna (min. 8 karakter).'
+                  example: password123
+              required:
+                - email
+                - password
+      security: []
+  /api/v1/auth/logout:
+    post:
+      summary: 'Logout pengguna'
+      operationId: logoutPengguna
+      description: 'Mencabut token yang sedang dipakai. Token tidak dapat digunakan lagi setelah logout.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Logout berhasil.'
+                properties:
+                  message:
+                    type: string
+                    example: 'Logout berhasil.'
+      tags:
+        - Autentikasi
+  /api/v1/auth/me:
+    get:
+      summary: 'Profil pengguna aktif'
+      operationId: profilPenggunaAktif
+      description: 'Mengembalikan profil pemilik token yang sedang dipakai.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    id: 1
+                    name: 'Administrator KDO'
+                    email: admin@kdo.test
+                    role: admin
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      name:
+                        type: string
+                        example: 'Administrator KDO'
+                      email:
+                        type: string
+                        example: admin@kdo.test
+                      role:
+                        type: string
+                        example: admin
+      tags:
+        - Autentikasi
+  /api/v1/kendaraan:
+    get:
+      summary: 'Daftar kendaraan (KDO)'
+      operationId: daftarKendaraanKDO
+      description: "Daftar kendaraan dinas operasional dengan pencarian (nomor polisi/merek/tipe),\nfilter kondisi, filter perangkat daerah, dan paginasi."
+      parameters:
+        -
+          in: query
+          name: search
+          description: 'Opsional, cari nomor polisi/merek/tipe.'
+          example: avanza
+          required: false
+          schema:
+            type: string
+            description: 'Opsional, cari nomor polisi/merek/tipe.'
+            example: avanza
+        -
+          in: query
+          name: kondisi
+          description: 'Opsional, salah satu: baik, rusak_ringan, rusak_berat.'
+          example: rusak_berat
+          required: false
+          schema:
+            type: string
+            description: 'Opsional, salah satu: baik, rusak_ringan, rusak_berat.'
+            example: rusak_berat
+        -
+          in: query
+          name: perangkat_daerah_id
+          description: 'Opsional, filter ID perangkat daerah.'
+          example: 1
+          required: false
+          schema:
+            type: integer
+            description: 'Opsional, filter ID perangkat daerah.'
+            example: 1
+        -
+          in: query
+          name: per_page
+          description: 'Opsional, jumlah item per halaman (maks 100).'
+          example: 15
+          required: false
+          schema:
+            type: integer
+            description: 'Opsional, jumlah item per halaman (maks 100).'
+            example: 15
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data: []
+                  links:
+                    first: 'http://localhost:8000/api/v1/kendaraan?page=1'
+                    last: 'http://localhost:8000/api/v1/kendaraan?page=1'
+                    prev: null
+                    next: null
+                  meta:
+                    current_page: 1
+                    from: null
+                    last_page: 1
+                    links:
+                      -
+                        url: null
+                        label: '&laquo; Previous'
+                        page: null
+                        active: false
+                      -
+                        url: 'http://localhost:8000/api/v1/kendaraan?page=1'
+                        label: '1'
+                        page: 1
+                        active: true
+                      -
+                        url: null
+                        label: 'Next &raquo;'
+                        page: null
+                        active: false
+                    path: 'http://localhost:8000/api/v1/kendaraan'
+                    per_page: 15
+                    to: null
+                    total: 0
+                properties:
+                  data:
+                    type: array
+                    example: []
+                  links:
+                    type: object
+                    properties:
+                      first:
+                        type: string
+                        example: 'http://localhost:8000/api/v1/kendaraan?page=1'
+                      last:
+                        type: string
+                        example: 'http://localhost:8000/api/v1/kendaraan?page=1'
+                      prev:
+                        type: string
+                        example: null
+                        nullable: true
+                      next:
+                        type: string
+                        example: null
+                        nullable: true
+                  meta:
+                    type: object
+                    properties:
+                      current_page:
+                        type: integer
+                        example: 1
+                      from:
+                        type: string
+                        example: null
+                        nullable: true
+                      last_page:
+                        type: integer
+                        example: 1
+                      links:
+                        type: array
+                        example:
+                          -
+                            url: null
+                            label: '&laquo; Previous'
+                            page: null
+                            active: false
+                          -
+                            url: 'http://localhost:8000/api/v1/kendaraan?page=1'
+                            label: '1'
+                            page: 1
+                            active: true
+                          -
+                            url: null
+                            label: 'Next &raquo;'
+                            page: null
+                            active: false
+                        items:
+                          type: object
+                          properties:
+                            url:
+                              type: string
+                              example: null
+                              nullable: true
+                            label:
+                              type: string
+                              example: '&laquo; Previous'
+                            page:
+                              type: string
+                              example: null
+                              nullable: true
+                            active:
+                              type: boolean
+                              example: false
+                      path:
+                        type: string
+                        example: 'http://localhost:8000/api/v1/kendaraan'
+                      per_page:
+                        type: integer
+                        example: 15
+                      to:
+                        type: string
+                        example: null
+                        nullable: true
+                      total:
+                        type: integer
+                        example: 0
+      tags:
+        - 'Kendaraan (KDO)'
+    post:
+      summary: 'Tambah kendaraan (KDO)'
+      operationId: tambahKendaraanKDO
+      description: "Membuat data kendaraan dinas baru. Hanya admin. Penanggung jawab (opsional)\nharus pegawai dari perangkat daerah yang sama."
+      parameters: []
+      responses:
+        201:
+          description: sukses
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    id: 16
+                    nomor_polisi: 'DK 7777 ZZ'
+                    kondisi: baik
+                    kondisi_label: Baik
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 16
+                      nomor_polisi:
+                        type: string
+                        example: 'DK 7777 ZZ'
+                      kondisi:
+                        type: string
+                        example: baik
+                      kondisi_label:
+                        type: string
+                        example: Baik
+        422:
+          description: 'PJ beda PD'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: '...'
+                  errors:
+                    pegawai_id:
+                      - 'Penanggung jawab harus pegawai dari perangkat daerah yang sama.'
+                properties:
+                  message:
+                    type: string
+                    example: '...'
+                  errors:
+                    type: object
+                    properties:
+                      pegawai_id:
+                        type: array
+                        example:
+                          - 'Penanggung jawab harus pegawai dari perangkat daerah yang sama.'
+                        items:
+                          type: string
+      tags:
+        - 'Kendaraan (KDO)'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nomor_polisi:
+                  type: string
+                  description: 'Nomor polisi unik (contoh: DK 1234 AB).'
+                  example: 'DK 7777 ZZ'
+                merek:
+                  type: string
+                  description: 'Merek kendaraan.'
+                  example: Honda
+                tipe:
+                  type: string
+                  description: 'Tipe/model kendaraan.'
+                  example: 'Brio Satya E'
+                tahun_produksi:
+                  type: integer
+                  description: 'Tahun produksi (1980-kini).'
+                  example: 2023
+                warna:
+                  type: string
+                  description: 'Warna kendaraan.'
+                  example: Biru
+                kondisi:
+                  type: string
+                  description: 'Kondisi: baik, rusak_ringan, atau rusak_berat.'
+                  example: baik
+                perangkat_daerah_id:
+                  type: integer
+                  description: 'ID perangkat daerah pemilik.'
+                  example: 2
+                pegawai_id:
+                  type: integer
+                  description: 'Opsional, ID pegawai penanggung jawab (satu PD).'
+                  example: 4
+                  nullable: true
+              required:
+                - nomor_polisi
+                - merek
+                - tipe
+                - tahun_produksi
+                - warna
+                - kondisi
+                - perangkat_daerah_id
+  '/api/v1/kendaraan/{id}':
+    get:
+      summary: 'Detail kendaraan (KDO)'
+      operationId: detailKendaraanKDO
+      description: "Mengambil satu data kendaraan berdasarkan ID, termasuk perangkat daerah\npemilik dan penanggung jawab."
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    id: 1
+                    nomor_polisi: 'DK 1234 AB'
+                    merek: Toyota
+                    tipe: 'Avanza 1.5 G'
+                    tahun_produksi: 2021
+                    warna: Putih
+                    kondisi: baik
+                    kondisi_label: Baik
+                    perangkat_daerah:
+                      id: 1
+                      kode: SETDA
+                      nama: 'Sekretariat Daerah'
+                    penanggung_jawab:
+                      id: 1
+                      nama: 'Budi Santoso'
+                      nip: '197504121998031001'
+                      jabatan: 'Kepala Bagian Umum'
+                      golongan: IV/b
+                    dibuat_pada: '2026-11-10 05:25:13'
+                    diubah_pada: '2026-11-10 05:25:13'
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      nomor_polisi:
+                        type: string
+                        example: 'DK 1234 AB'
+                      merek:
+                        type: string
+                        example: Toyota
+                      tipe:
+                        type: string
+                        example: 'Avanza 1.5 G'
+                      tahun_produksi:
+                        type: integer
+                        example: 2021
+                      warna:
+                        type: string
+                        example: Putih
+                      kondisi:
+                        type: string
+                        example: baik
+                      kondisi_label:
+                        type: string
+                        example: Baik
+                      perangkat_daerah:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                            example: 1
+                          kode:
+                            type: string
+                            example: SETDA
+                          nama:
+                            type: string
+                            example: 'Sekretariat Daerah'
+                      penanggung_jawab:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                            example: 1
+                          nama:
+                            type: string
+                            example: 'Budi Santoso'
+                          nip:
+                            type: string
+                            example: '197504121998031001'
+                          jabatan:
+                            type: string
+                            example: 'Kepala Bagian Umum'
+                          golongan:
+                            type: string
+                            example: IV/b
+                      dibuat_pada:
+                        type: string
+                        example: '2026-11-10 05:25:13'
+                      diubah_pada:
+                        type: string
+                        example: '2026-11-10 05:25:13'
+      tags:
+        - 'Kendaraan (KDO)'
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'ID kendaraan.'
+        example: 1
+        required: true
+        schema:
+          type: integer
+  '/api/v1/kendaraan/{kendaraan_id}':
+    put:
+      summary: 'Ubah kendaraan (KDO)'
+      operationId: ubahKendaraanKDO
+      description: 'Memperbarui data kendaraan. Hanya admin.'
+      parameters: []
+      responses: {}
+      tags:
+        - 'Kendaraan (KDO)'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nomor_polisi:
+                  type: string
+                  description: 'Must match the regex /^[A-Za-z]{1,2}\s?\d{1,4}\s?[A-Za-z]{0,3}$/. Must not be greater than 15 characters.'
+                  example: b
+                merek:
+                  type: string
+                  description: 'Must not be greater than 100 characters.'
+                  example: 'n'
+                tipe:
+                  type: string
+                  description: 'Must not be greater than 100 characters.'
+                  example: g
+                tahun_produksi:
+                  type: integer
+                  description: 'Must be between 1980 and 2027.'
+                  example: 1981
+                warna:
+                  type: string
+                  description: 'Must not be greater than 50 characters.'
+                  example: m
+                kondisi:
+                  type: string
+                  description: ''
+                  example: rusak_ringan
+                  enum:
+                    - baik
+                    - rusak_ringan
+                    - rusak_berat
+                perangkat_daerah_id:
+                  type: integer
+                  description: 'Must match an existing stored value.'
+                  example: 16
+                pegawai_id:
+                  type: integer
+                  description: 'Must match an existing stored value.'
+                  example: 16
+                  nullable: true
+              required:
+                - nomor_polisi
+                - merek
+                - tipe
+                - tahun_produksi
+                - warna
+                - kondisi
+                - perangkat_daerah_id
+    patch:
+      summary: 'Ubah kendaraan (KDO)'
+      operationId: ubahKendaraanKDO
+      description: 'Memperbarui data kendaraan. Hanya admin.'
+      parameters: []
+      responses: {}
+      tags:
+        - 'Kendaraan (KDO)'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nomor_polisi:
+                  type: string
+                  description: 'Must match the regex /^[A-Za-z]{1,2}\s?\d{1,4}\s?[A-Za-z]{0,3}$/. Must not be greater than 15 characters.'
+                  example: b
+                merek:
+                  type: string
+                  description: 'Must not be greater than 100 characters.'
+                  example: 'n'
+                tipe:
+                  type: string
+                  description: 'Must not be greater than 100 characters.'
+                  example: g
+                tahun_produksi:
+                  type: integer
+                  description: 'Must be between 1980 and 2027.'
+                  example: 1981
+                warna:
+                  type: string
+                  description: 'Must not be greater than 50 characters.'
+                  example: m
+                kondisi:
+                  type: string
+                  description: ''
+                  example: baik
+                  enum:
+                    - baik
+                    - rusak_ringan
+                    - rusak_berat
+                perangkat_daerah_id:
+                  type: integer
+                  description: 'Must match an existing stored value.'
+                  example: 16
+                pegawai_id:
+                  type: integer
+                  description: 'Must match an existing stored value.'
+                  example: 16
+                  nullable: true
+              required:
+                - nomor_polisi
+                - merek
+                - tipe
+                - tahun_produksi
+                - warna
+                - kondisi
+                - perangkat_daerah_id
+    delete:
+      summary: 'Hapus kendaraan (KDO)'
+      operationId: hapusKendaraanKDO
+      description: 'Menghapus data kendaraan. Hanya admin.'
+      parameters: []
+      responses:
+        204:
+          description: sukses
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: ''
+      tags:
+        - 'Kendaraan (KDO)'
+    parameters:
+      -
+        in: path
+        name: kendaraan_id
+        description: 'The ID of the kendaraan.'
+        example: 1
+        required: true
+        schema:
+          type: integer
+      -
+        in: path
+        name: id
+        description: 'ID kendaraan.'
+        example: 1
+        required: true
+        schema:
+          type: integer
+  '/api/v1/kendaraan/{kendaraan_id}/penanggung-jawab':
+    put:
+      summary: 'Tetapkan penanggung jawab kendaraan'
+      operationId: tetapkanPenanggungJawabKendaraan
+      description: "Menetapkan, mengganti, atau melepas pegawai penanggung jawab sebuah kendaraan.\nHanya admin. Pegawai harus berasal dari perangkat daerah pemilik kendaraan."
+      parameters: []
+      responses:
+        200:
+          description: sukses
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    id: 2
+                    nomor_polisi: 'DK 5678 CD'
+                    penanggung_jawab:
+                      id: 2
+                      nama: 'Siti Rahmawati'
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 2
+                      nomor_polisi:
+                        type: string
+                        example: 'DK 5678 CD'
+                      penanggung_jawab:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                            example: 2
+                          nama:
+                            type: string
+                            example: 'Siti Rahmawati'
+        422:
+          description: 'PJ beda PD'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: '...'
+                  errors:
+                    pegawai_id:
+                      - 'Penanggung jawab harus pegawai dari perangkat daerah yang sama.'
+                properties:
+                  message:
+                    type: string
+                    example: '...'
+                  errors:
+                    type: object
+                    properties:
+                      pegawai_id:
+                        type: array
+                        example:
+                          - 'Penanggung jawab harus pegawai dari perangkat daerah yang sama.'
+                        items:
+                          type: string
+      tags:
+        - 'Kendaraan (KDO)'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pegawai_id:
+                  type: integer
+                  description: 'Opsional, ID pegawai penanggung jawab; null untuk melepas penugasan.'
+                  example: 2
+                  nullable: true
+    parameters:
+      -
+        in: path
+        name: kendaraan_id
+        description: 'The ID of the kendaraan.'
+        example: 1
+        required: true
+        schema:
+          type: integer
+      -
+        in: path
+        name: id
+        description: 'ID kendaraan.'
+        example: 2
+        required: true
+        schema:
+          type: integer
+  /api/v1/laporan/kondisi:
+    get:
+      summary: 'Rekap kondisi kendaraan per perangkat daerah'
+      operationId: rekapKondisiKendaraanPerPerangkatDaerah
+      description: "Laporan jumlah kendaraan tiap perangkat daerah menurut kondisi\n(baik, rusak ringan, rusak berat) beserta ringkasan total keseluruhan."
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    -
+                      perangkat_daerah:
+                        id: 1
+                        kode: SETDA
+                        nama: 'Sekretariat Daerah'
+                      total_kendaraan: 2
+                      kondisi:
+                        baik: 1
+                        rusak_ringan: 1
+                        rusak_berat: 0
+                      tanpa_penanggung_jawab: 0
+                  ringkasan:
+                    total_perangkat_daerah: 6
+                    total_kendaraan: 15
+                    total_baik: 9
+                    total_rusak_ringan: 4
+                    total_rusak_berat: 2
+                properties:
+                  data:
+                    type: array
+                    example:
+                      -
+                        perangkat_daerah:
+                          id: 1
+                          kode: SETDA
+                          nama: 'Sekretariat Daerah'
+                        total_kendaraan: 2
+                        kondisi:
+                          baik: 1
+                          rusak_ringan: 1
+                          rusak_berat: 0
+                        tanpa_penanggung_jawab: 0
+                    items:
+                      type: object
+                      properties:
+                        perangkat_daerah:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                              example: 1
+                            kode:
+                              type: string
+                              example: SETDA
+                            nama:
+                              type: string
+                              example: 'Sekretariat Daerah'
+                        total_kendaraan:
+                          type: integer
+                          example: 2
+                        kondisi:
+                          type: object
+                          properties:
+                            baik:
+                              type: integer
+                              example: 1
+                            rusak_ringan:
+                              type: integer
+                              example: 1
+                            rusak_berat:
+                              type: integer
+                              example: 0
+                        tanpa_penanggung_jawab:
+                          type: integer
+                          example: 0
+                  ringkasan:
+                    type: object
+                    properties:
+                      total_perangkat_daerah:
+                        type: integer
+                        example: 6
+                      total_kendaraan:
+                        type: integer
+                        example: 15
+                      total_baik:
+                        type: integer
+                        example: 9
+                      total_rusak_ringan:
+                        type: integer
+                        example: 4
+                      total_rusak_berat:
+                        type: integer
+                        example: 2
+      tags:
+        - Laporan
+  /api/v1/pegawai:
+    get:
+      summary: 'Daftar pegawai (PNS)'
+      operationId: daftarPegawaiPNS
+      description: 'Daftar pegawai negeri sipil dengan pencarian, filter perangkat daerah, dan paginasi.'
+      parameters:
+        -
+          in: query
+          name: search
+          description: 'Opsional, cari berdasarkan nama/NIP/jabatan.'
+          example: budi
+          required: false
+          schema:
+            type: string
+            description: 'Opsional, cari berdasarkan nama/NIP/jabatan.'
+            example: budi
+        -
+          in: query
+          name: perangkat_daerah_id
+          description: 'Opsional, filter ID perangkat daerah.'
+          example: 1
+          required: false
+          schema:
+            type: integer
+            description: 'Opsional, filter ID perangkat daerah.'
+            example: 1
+        -
+          in: query
+          name: per_page
+          description: 'Opsional, jumlah item per halaman (maks 100).'
+          example: 15
+          required: false
+          schema:
+            type: integer
+            description: 'Opsional, jumlah item per halaman (maks 100).'
+            example: 15
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    -
+                      id: 1
+                      nama: 'Budi Santoso'
+                      nip: '197504121998031001'
+                      jabatan: 'Kepala Bagian Umum'
+                      golongan: IV/b
+                      perangkat_daerah:
+                        id: 1
+                        kode: SETDA
+                        nama: 'Sekretariat Daerah'
+                      jumlah_kendaraan_ditangani: 1
+                      dibuat_pada: '2026-11-10 05:25:13'
+                      diubah_pada: '2026-11-10 05:25:13'
+                  links:
+                    first: 'http://localhost:8000/api/v1/pegawai?page=1'
+                    last: 'http://localhost:8000/api/v1/pegawai?page=1'
+                    prev: null
+                    next: null
+                  meta:
+                    current_page: 1
+                    from: 1
+                    last_page: 1
+                    links:
+                      -
+                        url: null
+                        label: '&laquo; Previous'
+                        page: null
+                        active: false
+                      -
+                        url: 'http://localhost:8000/api/v1/pegawai?page=1'
+                        label: '1'
+                        page: 1
+                        active: true
+                      -
+                        url: null
+                        label: 'Next &raquo;'
+                        page: null
+                        active: false
+                    path: 'http://localhost:8000/api/v1/pegawai'
+                    per_page: 15
+                    to: 1
+                    total: 1
+                properties:
+                  data:
+                    type: array
+                    example:
+                      -
+                        id: 1
+                        nama: 'Budi Santoso'
+                        nip: '197504121998031001'
+                        jabatan: 'Kepala Bagian Umum'
+                        golongan: IV/b
+                        perangkat_daerah:
+                          id: 1
+                          kode: SETDA
+                          nama: 'Sekretariat Daerah'
+                        jumlah_kendaraan_ditangani: 1
+                        dibuat_pada: '2026-11-10 05:25:13'
+                        diubah_pada: '2026-11-10 05:25:13'
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        nama:
+                          type: string
+                          example: 'Budi Santoso'
+                        nip:
+                          type: string
+                          example: '197504121998031001'
+                        jabatan:
+                          type: string
+                          example: 'Kepala Bagian Umum'
+                        golongan:
+                          type: string
+                          example: IV/b
+                        perangkat_daerah:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                              example: 1
+                            kode:
+                              type: string
+                              example: SETDA
+                            nama:
+                              type: string
+                              example: 'Sekretariat Daerah'
+                        jumlah_kendaraan_ditangani:
+                          type: integer
+                          example: 1
+                        dibuat_pada:
+                          type: string
+                          example: '2026-11-10 05:25:13'
+                        diubah_pada:
+                          type: string
+                          example: '2026-11-10 05:25:13'
+                  links:
+                    type: object
+                    properties:
+                      first:
+                        type: string
+                        example: 'http://localhost:8000/api/v1/pegawai?page=1'
+                      last:
+                        type: string
+                        example: 'http://localhost:8000/api/v1/pegawai?page=1'
+                      prev:
+                        type: string
+                        example: null
+                        nullable: true
+                      next:
+                        type: string
+                        example: null
+                        nullable: true
+                  meta:
+                    type: object
+                    properties:
+                      current_page:
+                        type: integer
+                        example: 1
+                      from:
+                        type: integer
+                        example: 1
+                      last_page:
+                        type: integer
+                        example: 1
+                      links:
+                        type: array
+                        example:
+                          -
+                            url: null
+                            label: '&laquo; Previous'
+                            page: null
+                            active: false
+                          -
+                            url: 'http://localhost:8000/api/v1/pegawai?page=1'
+                            label: '1'
+                            page: 1
+                            active: true
+                          -
+                            url: null
+                            label: 'Next &raquo;'
+                            page: null
+                            active: false
+                        items:
+                          type: object
+                          properties:
+                            url:
+                              type: string
+                              example: null
+                              nullable: true
+                            label:
+                              type: string
+                              example: '&laquo; Previous'
+                            page:
+                              type: string
+                              example: null
+                              nullable: true
+                            active:
+                              type: boolean
+                              example: false
+                      path:
+                        type: string
+                        example: 'http://localhost:8000/api/v1/pegawai'
+                      per_page:
+                        type: integer
+                        example: 15
+                      to:
+                        type: integer
+                        example: 1
+                      total:
+                        type: integer
+                        example: 1
+      tags:
+        - 'Pegawai (PNS)'
+    post:
+      summary: 'Tambah pegawai (PNS)'
+      operationId: tambahPegawaiPNS
+      description: "Membuat data pegawai baru. Hanya admin. NIP harus 18 digit dan unik;\ngolongan format I/a sampai IV/e."
+      parameters: []
+      responses:
+        201:
+          description: sukses
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    id: 13
+                    nama: 'Nur Aisyah'
+                    nip: '199410052017012005'
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 13
+                      nama:
+                        type: string
+                        example: 'Nur Aisyah'
+                      nip:
+                        type: string
+                        example: '199410052017012005'
+        422:
+          description: 'NIP tidak 18 digit'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: '...'
+                  errors:
+                    nip:
+                      - 'NIP harus tepat 18 digit angka.'
+                properties:
+                  message:
+                    type: string
+                    example: '...'
+                  errors:
+                    type: object
+                    properties:
+                      nip:
+                        type: array
+                        example:
+                          - 'NIP harus tepat 18 digit angka.'
+                        items:
+                          type: string
+      tags:
+        - 'Pegawai (PNS)'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nama:
+                  type: string
+                  description: 'Nama lengkap pegawai.'
+                  example: 'Nur Aisyah'
+                nip:
+                  type: string
+                  description: 'NIP 18 digit, unik.'
+                  example: '199410052017012005'
+                jabatan:
+                  type: string
+                  description: 'Jabatan pegawai.'
+                  example: 'Analis Kepegawaian'
+                golongan:
+                  type: string
+                  description: 'Golongan ruang (I/a-IV/e).'
+                  example: III/a
+                perangkat_daerah_id:
+                  type: integer
+                  description: 'ID perangkat daerah tempat bertugas.'
+                  example: 1
+              required:
+                - nama
+                - nip
+                - jabatan
+                - golongan
+                - perangkat_daerah_id
+  '/api/v1/pegawai/{id}':
+    get:
+      summary: 'Detail pegawai (PNS)'
+      operationId: detailPegawaiPNS
+      description: "Mengambil satu data pegawai berdasarkan ID, termasuk perangkat daerah dan\njumlah kendaraan yang ditangani."
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    id: 1
+                    nama: 'Budi Santoso'
+                    nip: '197504121998031001'
+                    jabatan: 'Kepala Bagian Umum'
+                    golongan: IV/b
+                    perangkat_daerah:
+                      id: 1
+                      kode: SETDA
+                      nama: 'Sekretariat Daerah'
+                    jumlah_kendaraan_ditangani: 1
+                    dibuat_pada: '2026-11-10 05:25:13'
+                    diubah_pada: '2026-11-10 05:25:13'
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      nama:
+                        type: string
+                        example: 'Budi Santoso'
+                      nip:
+                        type: string
+                        example: '197504121998031001'
+                      jabatan:
+                        type: string
+                        example: 'Kepala Bagian Umum'
+                      golongan:
+                        type: string
+                        example: IV/b
+                      perangkat_daerah:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                            example: 1
+                          kode:
+                            type: string
+                            example: SETDA
+                          nama:
+                            type: string
+                            example: 'Sekretariat Daerah'
+                      jumlah_kendaraan_ditangani:
+                        type: integer
+                        example: 1
+                      dibuat_pada:
+                        type: string
+                        example: '2026-11-10 05:25:13'
+                      diubah_pada:
+                        type: string
+                        example: '2026-11-10 05:25:13'
+      tags:
+        - 'Pegawai (PNS)'
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'ID pegawai.'
+        example: 1
+        required: true
+        schema:
+          type: integer
+  '/api/v1/pegawai/{pegawai_id}':
+    put:
+      summary: 'Ubah pegawai (PNS)'
+      operationId: ubahPegawaiPNS
+      description: 'Memperbarui data pegawai. Hanya admin.'
+      parameters: []
+      responses: {}
+      tags:
+        - 'Pegawai (PNS)'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nama:
+                  type: string
+                  description: 'Must not be greater than 255 characters.'
+                  example: b
+                nip:
+                  type: string
+                  description: 'Must be 18 digits.'
+                  example: '822569775137449171'
+                jabatan:
+                  type: string
+                  description: 'Must not be greater than 255 characters.'
+                  example: g
+                golongan:
+                  type: string
+                  description: 'Must match the regex /^(?:I|II|III|IV)\/(?:a|b|c|d|e)$/.'
+                  example: ':I|II|III|IV)/b'
+                perangkat_daerah_id:
+                  type: integer
+                  description: 'Must match an existing stored value.'
+                  example: 16
+              required:
+                - nama
+                - nip
+                - jabatan
+                - golongan
+                - perangkat_daerah_id
+    patch:
+      summary: 'Ubah pegawai (PNS)'
+      operationId: ubahPegawaiPNS
+      description: 'Memperbarui data pegawai. Hanya admin.'
+      parameters: []
+      responses: {}
+      tags:
+        - 'Pegawai (PNS)'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nama:
+                  type: string
+                  description: 'Must not be greater than 255 characters.'
+                  example: b
+                nip:
+                  type: string
+                  description: 'Must be 18 digits.'
+                  example: '822569775137449171'
+                jabatan:
+                  type: string
+                  description: 'Must not be greater than 255 characters.'
+                  example: g
+                golongan:
+                  type: string
+                  description: 'Must match the regex /^(?:I|II|III|IV)\/(?:a|b|c|d|e)$/.'
+                  example: ':I|II|III|IV)/b'
+                perangkat_daerah_id:
+                  type: integer
+                  description: 'Must match an existing stored value.'
+                  example: 16
+              required:
+                - nama
+                - nip
+                - jabatan
+                - golongan
+                - perangkat_daerah_id
+    delete:
+      summary: 'Hapus pegawai (PNS)'
+      operationId: hapusPegawaiPNS
+      description: "Menghapus data pegawai. Hanya admin. Kendaraan yang ditangani pegawai\ntersebut otomatis menjadi tanpa penanggung jawab."
+      parameters: []
+      responses:
+        204:
+          description: sukses
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: ''
+      tags:
+        - 'Pegawai (PNS)'
+    parameters:
+      -
+        in: path
+        name: pegawai_id
+        description: 'The ID of the pegawai.'
+        example: 1
+        required: true
+        schema:
+          type: integer
+      -
+        in: path
+        name: id
+        description: 'ID pegawai.'
+        example: 1
+        required: true
+        schema:
+          type: integer
+  /api/v1/perangkat-daerah:
+    get:
+      summary: 'Daftar perangkat daerah'
+      operationId: daftarPerangkatDaerah
+      description: 'Daftar instansi dengan pencarian dan paginasi. Termasuk jumlah pegawai dan kendaraan tiap PD.'
+      parameters:
+        -
+          in: query
+          name: search
+          description: 'Opsional, cari berdasarkan kode/nama.'
+          example: dinas
+          required: false
+          schema:
+            type: string
+            description: 'Opsional, cari berdasarkan kode/nama.'
+            example: dinas
+        -
+          in: query
+          name: per_page
+          description: 'Opsional, jumlah item per halaman (maks 100).'
+          example: 15
+          required: false
+          schema:
+            type: integer
+            description: 'Opsional, jumlah item per halaman (maks 100).'
+            example: 15
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    -
+                      id: 3
+                      kode: DINKES
+                      nama: 'Dinas Kesehatan'
+                      jumlah_pegawai: 2
+                      jumlah_kendaraan: 3
+                      dibuat_pada: '2026-11-10 05:25:13'
+                      diubah_pada: '2026-11-10 05:25:13'
+                    -
+                      id: 2
+                      kode: DISDIK
+                      nama: 'Dinas Pendidikan'
+                      jumlah_pegawai: 3
+                      jumlah_kendaraan: 3
+                      dibuat_pada: '2026-11-10 05:25:13'
+                      diubah_pada: '2026-11-10 05:25:13'
+                    -
+                      id: 4
+                      kode: DISHUB
+                      nama: 'Dinas Perhubungan'
+                      jumlah_pegawai: 2
+                      jumlah_kendaraan: 3
+                      dibuat_pada: '2026-11-10 05:25:13'
+                      diubah_pada: '2026-11-10 05:25:13'
+                    -
+                      id: 5
+                      kode: DPUPR
+                      nama: 'Dinas Pekerjaan Umum dan Penataan Ruang'
+                      jumlah_pegawai: 2
+                      jumlah_kendaraan: 2
+                      dibuat_pada: '2026-11-10 05:25:13'
+                      diubah_pada: '2026-11-10 05:25:13'
+                  links:
+                    first: 'http://localhost:8000/api/v1/perangkat-daerah?page=1'
+                    last: 'http://localhost:8000/api/v1/perangkat-daerah?page=1'
+                    prev: null
+                    next: null
+                  meta:
+                    current_page: 1
+                    from: 1
+                    last_page: 1
+                    links:
+                      -
+                        url: null
+                        label: '&laquo; Previous'
+                        page: null
+                        active: false
+                      -
+                        url: 'http://localhost:8000/api/v1/perangkat-daerah?page=1'
+                        label: '1'
+                        page: 1
+                        active: true
+                      -
+                        url: null
+                        label: 'Next &raquo;'
+                        page: null
+                        active: false
+                    path: 'http://localhost:8000/api/v1/perangkat-daerah'
+                    per_page: 15
+                    to: 4
+                    total: 4
+                properties:
+                  data:
+                    type: array
+                    example:
+                      -
+                        id: 3
+                        kode: DINKES
+                        nama: 'Dinas Kesehatan'
+                        jumlah_pegawai: 2
+                        jumlah_kendaraan: 3
+                        dibuat_pada: '2026-11-10 05:25:13'
+                        diubah_pada: '2026-11-10 05:25:13'
+                      -
+                        id: 2
+                        kode: DISDIK
+                        nama: 'Dinas Pendidikan'
+                        jumlah_pegawai: 3
+                        jumlah_kendaraan: 3
+                        dibuat_pada: '2026-11-10 05:25:13'
+                        diubah_pada: '2026-11-10 05:25:13'
+                      -
+                        id: 4
+                        kode: DISHUB
+                        nama: 'Dinas Perhubungan'
+                        jumlah_pegawai: 2
+                        jumlah_kendaraan: 3
+                        dibuat_pada: '2026-11-10 05:25:13'
+                        diubah_pada: '2026-11-10 05:25:13'
+                      -
+                        id: 5
+                        kode: DPUPR
+                        nama: 'Dinas Pekerjaan Umum dan Penataan Ruang'
+                        jumlah_pegawai: 2
+                        jumlah_kendaraan: 2
+                        dibuat_pada: '2026-11-10 05:25:13'
+                        diubah_pada: '2026-11-10 05:25:13'
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 3
+                        kode:
+                          type: string
+                          example: DINKES
+                        nama:
+                          type: string
+                          example: 'Dinas Kesehatan'
+                        jumlah_pegawai:
+                          type: integer
+                          example: 2
+                        jumlah_kendaraan:
+                          type: integer
+                          example: 3
+                        dibuat_pada:
+                          type: string
+                          example: '2026-11-10 05:25:13'
+                        diubah_pada:
+                          type: string
+                          example: '2026-11-10 05:25:13'
+                  links:
+                    type: object
+                    properties:
+                      first:
+                        type: string
+                        example: 'http://localhost:8000/api/v1/perangkat-daerah?page=1'
+                      last:
+                        type: string
+                        example: 'http://localhost:8000/api/v1/perangkat-daerah?page=1'
+                      prev:
+                        type: string
+                        example: null
+                        nullable: true
+                      next:
+                        type: string
+                        example: null
+                        nullable: true
+                  meta:
+                    type: object
+                    properties:
+                      current_page:
+                        type: integer
+                        example: 1
+                      from:
+                        type: integer
+                        example: 1
+                      last_page:
+                        type: integer
+                        example: 1
+                      links:
+                        type: array
+                        example:
+                          -
+                            url: null
+                            label: '&laquo; Previous'
+                            page: null
+                            active: false
+                          -
+                            url: 'http://localhost:8000/api/v1/perangkat-daerah?page=1'
+                            label: '1'
+                            page: 1
+                            active: true
+                          -
+                            url: null
+                            label: 'Next &raquo;'
+                            page: null
+                            active: false
+                        items:
+                          type: object
+                          properties:
+                            url:
+                              type: string
+                              example: null
+                              nullable: true
+                            label:
+                              type: string
+                              example: '&laquo; Previous'
+                            page:
+                              type: string
+                              example: null
+                              nullable: true
+                            active:
+                              type: boolean
+                              example: false
+                      path:
+                        type: string
+                        example: 'http://localhost:8000/api/v1/perangkat-daerah'
+                      per_page:
+                        type: integer
+                        example: 15
+                      to:
+                        type: integer
+                        example: 4
+                      total:
+                        type: integer
+                        example: 4
+      tags:
+        - 'Perangkat Daerah (PD)'
+    post:
+      summary: 'Tambah perangkat daerah'
+      operationId: tambahPerangkatDaerah
+      description: 'Membuat data perangkat daerah baru. Hanya admin.'
+      parameters: []
+      responses:
+        201:
+          description: sukses
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    id: 7
+                    kode: DISKOMINFO
+                    nama: 'Dinas Komunikasi dan Informatika'
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 7
+                      kode:
+                        type: string
+                        example: DISKOMINFO
+                      nama:
+                        type: string
+                        example: 'Dinas Komunikasi dan Informatika'
+        422:
+          description: 'kode duplikat'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Kode perangkat daerah sudah dipakai.'
+                  errors:
+                    kode:
+                      - 'Kode perangkat daerah sudah dipakai.'
+                properties:
+                  message:
+                    type: string
+                    example: 'Kode perangkat daerah sudah dipakai.'
+                  errors:
+                    type: object
+                    properties:
+                      kode:
+                        type: array
+                        example:
+                          - 'Kode perangkat daerah sudah dipakai.'
+                        items:
+                          type: string
+      tags:
+        - 'Perangkat Daerah (PD)'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                kode:
+                  type: string
+                  description: 'Kode unik instansi (maks 20).'
+                  example: DISKOMINFO
+                nama:
+                  type: string
+                  description: 'Nama instansi.'
+                  example: 'Dinas Komunikasi dan Informatika'
+              required:
+                - kode
+                - nama
+  '/api/v1/perangkat-daerah/{id}':
+    get:
+      summary: 'Detail perangkat daerah'
+      operationId: detailPerangkatDaerah
+      description: 'Mengambil satu data perangkat daerah berdasarkan ID.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    id: 1
+                    kode: SETDA
+                    nama: 'Sekretariat Daerah'
+                    jumlah_pegawai: 2
+                    jumlah_kendaraan: 2
+                    dibuat_pada: '2026-11-10 05:25:12'
+                    diubah_pada: '2026-11-10 05:25:12'
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      kode:
+                        type: string
+                        example: SETDA
+                      nama:
+                        type: string
+                        example: 'Sekretariat Daerah'
+                      jumlah_pegawai:
+                        type: integer
+                        example: 2
+                      jumlah_kendaraan:
+                        type: integer
+                        example: 2
+                      dibuat_pada:
+                        type: string
+                        example: '2026-11-10 05:25:12'
+                      diubah_pada:
+                        type: string
+                        example: '2026-11-10 05:25:12'
+        404:
+          description: 'tidak ditemukan'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Data tidak ditemukan.'
+                properties:
+                  message:
+                    type: string
+                    example: 'Data tidak ditemukan.'
+      tags:
+        - 'Perangkat Daerah (PD)'
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'ID perangkat daerah.'
+        example: 1
+        required: true
+        schema:
+          type: integer
+  '/api/v1/perangkat-daerah/{perangkat_daerah_id}':
+    put:
+      summary: 'Ubah perangkat daerah'
+      operationId: ubahPerangkatDaerah
+      description: 'Memperbarui data perangkat daerah. Hanya admin.'
+      parameters: []
+      responses: {}
+      tags:
+        - 'Perangkat Daerah (PD)'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                kode:
+                  type: string
+                  description: 'Kode unik instansi.'
+                  example: SETDA
+                nama:
+                  type: string
+                  description: 'Nama instansi.'
+                  example: 'Sekretariat Daerah'
+              required:
+                - kode
+                - nama
+    patch:
+      summary: 'Ubah perangkat daerah'
+      operationId: ubahPerangkatDaerah
+      description: 'Memperbarui data perangkat daerah. Hanya admin.'
+      parameters: []
+      responses: {}
+      tags:
+        - 'Perangkat Daerah (PD)'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                kode:
+                  type: string
+                  description: 'Kode unik instansi.'
+                  example: SETDA
+                nama:
+                  type: string
+                  description: 'Nama instansi.'
+                  example: 'Sekretariat Daerah'
+              required:
+                - kode
+                - nama
+    delete:
+      summary: 'Hapus perangkat daerah'
+      operationId: hapusPerangkatDaerah
+      description: "Menghapus data perangkat daerah. Hanya admin. PD yang masih memiliki\npegawai atau kendaraan tidak dapat dihapus (409)."
+      parameters: []
+      responses:
+        204:
+          description: sukses
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: ''
+        409:
+          description: 'masih berisi data'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Data tidak dapat diproses karena masih direferensikan oleh data lain.'
+                properties:
+                  message:
+                    type: string
+                    example: 'Data tidak dapat diproses karena masih direferensikan oleh data lain.'
+      tags:
+        - 'Perangkat Daerah (PD)'
+    parameters:
+      -
+        in: path
+        name: perangkat_daerah_id
+        description: 'The ID of the perangkat daerah.'
+        example: 1
+        required: true
+        schema:
+          type: integer
+      -
+        in: path
+        name: id
+        description: 'ID perangkat daerah.'
+        example: 1
+        required: true
+        schema:
+          type: integer

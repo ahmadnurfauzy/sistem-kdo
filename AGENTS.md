@@ -98,7 +98,7 @@ Setiap penambahan fitur baru wajib diikuti pembaruan:
 - [x] Fase 2 — database: migration, model, seeder, dump awal (6 PD, 12 PNS, 15 KDO, 2 user)
 - [x] Fase 3 — auth & keamanan dasar (Sanctum, role admin/viewer, throttle, CORS)
 - [x] Fase 4 — REST API CRUD (inti): PD, PNS, KDO + assign PJ + laporan, teruji menyeluruh
-- [ ] Fase 5 — dokumentasi API (Scribe + Postman)
+- [x] Fase 5 — dokumentasi API (Scribe HTML + Postman collection + OpenAPI)
 - [ ] Fase 6 — frontend Vue 3
 - [ ] Fase 7 — finalisasi & pengumpulan
 - [ ] Fase 8 — bonus (riwayat kondisi/PJ, kolom tambahan, export, foto)

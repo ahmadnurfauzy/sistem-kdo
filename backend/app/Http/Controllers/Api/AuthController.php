@@ -12,8 +12,17 @@ use Illuminate\Validation\ValidationException;
 class AuthController extends Controller
 {
     /**
-     * POST /api/v1/auth/login
-     * Login dengan email + password, mengembalikan bearer token Sanctum.
+     * Login pengguna
+     *
+     * Login dengan email dan password untuk mendapatkan bearer token. Token
+     * dipakai pada seluruh endpoint lain melalui header `Authorization: Bearer {token}`.
+     *
+     * @group Autentikasi
+     * @unauthenticated
+     * @bodyParam email string required Email pengguna. Example: admin@kdo.test
+     * @bodyParam password string required Password pengguna (min. 8 karakter). Example: password123
+     * @response 200 {"message":"Login berhasil.","data":{"token":"1|abc...","user":{"id":1,"name":"Administrator KDO","email":"admin@kdo.test","role":"admin"}}}
+     * @response 422 {"message":"Email atau password salah.","errors":{"email":["Email atau password salah."]}}
      */
     public function login(Request $request): JsonResponse
     {
@@ -53,8 +62,12 @@ class AuthController extends Controller
     }
 
     /**
-     * POST /api/v1/auth/logout
-     * Mencabut token yang dipakai saat ini.
+     * Logout pengguna
+     *
+     * Mencabut token yang sedang dipakai. Token tidak dapat digunakan lagi setelah logout.
+     *
+     * @group Autentikasi
+     * @response 200 {"message":"Logout berhasil."}
      */
     public function logout(Request $request): JsonResponse
     {
@@ -66,8 +79,12 @@ class AuthController extends Controller
     }
 
     /**
-     * GET /api/v1/auth/me
-     * Profil pengguna pemilik token.
+     * Profil pengguna aktif
+     *
+     * Mengembalikan profil pemilik token yang sedang dipakai.
+     *
+     * @group Autentikasi
+     * @response 200 {"data":{"id":1,"name":"Administrator KDO","email":"admin@kdo.test","role":"admin"}}
      */
     public function me(Request $request): JsonResponse
     {

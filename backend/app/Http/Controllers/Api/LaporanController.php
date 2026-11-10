@@ -9,8 +9,13 @@ use Illuminate\Http\JsonResponse;
 class LaporanController extends Controller
 {
     /**
-     * GET /api/v1/laporan/kondisi
-     * Rekap jumlah kendaraan per perangkat daerah menurut kondisi.
+     * Rekap kondisi kendaraan per perangkat daerah
+     *
+     * Laporan jumlah kendaraan tiap perangkat daerah menurut kondisi
+     * (baik, rusak ringan, rusak berat) beserta ringkasan total keseluruhan.
+     *
+     * @group Laporan
+     * @response 200 {"data":[{"perangkat_daerah":{"id":1,"kode":"SETDA","nama":"Sekretariat Daerah"},"total_kendaraan":2,"kondisi":{"baik":1,"rusak_ringan":1,"rusak_berat":0},"tanpa_penanggung_jawab":0}],"ringkasan":{"total_perangkat_daerah":6,"total_kendaraan":15,"total_baik":9,"total_rusak_ringan":4,"total_rusak_berat":2}}
      */
     public function kondisi(): JsonResponse
     {

@@ -1,0 +1,46 @@
+name: Laporan
+description: ''
+endpoints:
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/laporan/kondisi
+    metadata:
+      custom: []
+      groupName: Laporan
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Rekap kondisi kendaraan per perangkat daerah'
+      description: |-
+        Laporan jumlah kendaraan tiap perangkat daerah menurut kondisi
+        (baik, rusak ringan, rusak berat) beserta ringkasan total keseluruhan.
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":[{"perangkat_daerah":{"id":1,"kode":"SETDA","nama":"Sekretariat Daerah"},"total_kendaraan":2,"kondisi":{"baik":1,"rusak_ringan":1,"rusak_berat":0},"tanpa_penanggung_jawab":0}],"ringkasan":{"total_perangkat_daerah":6,"total_kendaraan":15,"total_baik":9,"total_rusak_ringan":4,"total_rusak_berat":2}}'
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 1|gEoI9DUHxBpwn6CbAnGL13XL2yjZpxkJrgOsF14h9ea314fb'
+    controller: null
+    method: null
+    route: null

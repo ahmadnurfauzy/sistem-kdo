@@ -14,8 +14,13 @@ use Illuminate\Http\Response;
 class PerangkatDaerahController extends Controller
 {
     /**
-     * GET /api/v1/perangkat-daerah
-     * Daftar perangkat daerah: search (kode/nama) + paginasi.
+     * Daftar perangkat daerah
+     *
+     * Daftar instansi dengan pencarian dan paginasi. Termasuk jumlah pegawai dan kendaraan tiap PD.
+     *
+     * @group Perangkat Daerah (PD)
+     * @queryParam search string Opsional, cari berdasarkan kode/nama. Example: dinas
+     * @queryParam per_page int Opsional, jumlah item per halaman (maks 100). Example: 15
      */
     public function index(): AnonymousResourceCollection
     {
@@ -36,7 +41,15 @@ class PerangkatDaerahController extends Controller
     }
 
     /**
-     * POST /api/v1/perangkat-daerah
+     * Tambah perangkat daerah
+     *
+     * Membuat data perangkat daerah baru. Hanya admin.
+     *
+     * @group Perangkat Daerah (PD)
+     * @bodyParam kode string required Kode unik instansi (maks 20). Example: DISKOMINFO
+     * @bodyParam nama string required Nama instansi. Example: Dinas Komunikasi dan Informatika
+     * @response 201 scenario="sukses" {"data":{"id":7,"kode":"DISKOMINFO","nama":"Dinas Komunikasi dan Informatika"}}
+     * @response 422 scenario="kode duplikat" {"message":"Kode perangkat daerah sudah dipakai.","errors":{"kode":["Kode perangkat daerah sudah dipakai."]}}
      */
     public function store(StorePerangkatDaerahRequest $request): JsonResponse
     {
@@ -49,7 +62,13 @@ class PerangkatDaerahController extends Controller
     }
 
     /**
-     * GET /api/v1/perangkat-daerah/{perangkat_daerah}
+     * Detail perangkat daerah
+     *
+     * Mengambil satu data perangkat daerah berdasarkan ID.
+     *
+     * @group Perangkat Daerah (PD)
+     * @urlParam id int required ID perangkat daerah. Example: 1
+     * @response 404 scenario="tidak ditemukan" {"message":"Data tidak ditemukan."}
      */
     public function show(PerangkatDaerah $perangkatDaerah): PerangkatDaerahResource
     {
@@ -59,7 +78,14 @@ class PerangkatDaerahController extends Controller
     }
 
     /**
-     * PUT/PATCH /api/v1/perangkat-daerah/{perangkat_daerah}
+     * Ubah perangkat daerah
+     *
+     * Memperbarui data perangkat daerah. Hanya admin.
+     *
+     * @group Perangkat Daerah (PD)
+     * @urlParam id int required ID perangkat daerah. Example: 1
+     * @bodyParam kode string required Kode unik instansi. Example: SETDA
+     * @bodyParam nama string required Nama instansi. Example: Sekretariat Daerah
      */
     public function update(UpdatePerangkatDaerahRequest $request, PerangkatDaerah $perangkatDaerah): PerangkatDaerahResource
     {
@@ -69,8 +95,15 @@ class PerangkatDaerahController extends Controller
     }
 
     /**
-     * DELETE /api/v1/perangkat-daerah/{perangkat_daerah}
-     * FK restrictOnDelete menjaga agar PD berisi data tidak bisa dihapus (409).
+     * Hapus perangkat daerah
+     *
+     * Menghapus data perangkat daerah. Hanya admin. PD yang masih memiliki
+     * pegawai atau kendaraan tidak dapat dihapus (409).
+     *
+     * @group Perangkat Daerah (PD)
+     * @urlParam id int required ID perangkat daerah. Example: 1
+     * @response 204 scenario="sukses"
+     * @response 409 scenario="masih berisi data" {"message":"Data tidak dapat diproses karena masih direferensikan oleh data lain."}
      */
     public function destroy(PerangkatDaerah $perangkatDaerah): Response
     {

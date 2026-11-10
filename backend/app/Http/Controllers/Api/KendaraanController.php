@@ -15,9 +15,16 @@ use Illuminate\Http\Response;
 class KendaraanController extends Controller
 {
     /**
-     * GET /api/v1/kendaraan
-     * Daftar KDO: search (nomor polisi/merek/tipe) + filter kondisi
-     * + filter perangkat daerah + paginasi. Eager loading menghindari N+1.
+     * Daftar kendaraan (KDO)
+     *
+     * Daftar kendaraan dinas operasional dengan pencarian (nomor polisi/merek/tipe),
+     * filter kondisi, filter perangkat daerah, dan paginasi.
+     *
+     * @group Kendaraan (KDO)
+     * @queryParam search string Opsional, cari nomor polisi/merek/tipe. Example: avanza
+     * @queryParam kondisi string Opsional, salah satu: baik, rusak_ringan, rusak_berat. Example: rusak_berat
+     * @queryParam perangkat_daerah_id int Opsional, filter ID perangkat daerah. Example: 1
+     * @queryParam per_page int Opsional, jumlah item per halaman (maks 100). Example: 15
      */
     public function index(): AnonymousResourceCollection
     {
@@ -47,7 +54,22 @@ class KendaraanController extends Controller
     }
 
     /**
-     * POST /api/v1/kendaraan
+     * Tambah kendaraan (KDO)
+     *
+     * Membuat data kendaraan dinas baru. Hanya admin. Penanggung jawab (opsional)
+     * harus pegawai dari perangkat daerah yang sama.
+     *
+     * @group Kendaraan (KDO)
+     * @bodyParam nomor_polisi string required Nomor polisi unik (contoh: DK 1234 AB). Example: DK 7777 ZZ
+     * @bodyParam merek string required Merek kendaraan. Example: Honda
+     * @bodyParam tipe string required Tipe/model kendaraan. Example: Brio Satya E
+     * @bodyParam tahun_produksi int required Tahun produksi (1980-kini). Example: 2023
+     * @bodyParam warna string required Warna kendaraan. Example: Biru
+     * @bodyParam kondisi string required Kondisi: baik, rusak_ringan, atau rusak_berat. Example: baik
+     * @bodyParam perangkat_daerah_id int required ID perangkat daerah pemilik. Example: 2
+     * @bodyParam pegawai_id int Opsional, ID pegawai penanggung jawab (satu PD). Example: 4
+     * @response 201 scenario="sukses" {"data":{"id":16,"nomor_polisi":"DK 7777 ZZ","kondisi":"baik","kondisi_label":"Baik"}}
+     * @response 422 scenario="PJ beda PD" {"message":"...","errors":{"pegawai_id":["Penanggung jawab harus pegawai dari perangkat daerah yang sama."]}}
      */
     public function store(StoreKendaraanRequest $request): JsonResponse
     {
@@ -61,7 +83,13 @@ class KendaraanController extends Controller
     }
 
     /**
-     * GET /api/v1/kendaraan/{kendaraan}
+     * Detail kendaraan (KDO)
+     *
+     * Mengambil satu data kendaraan berdasarkan ID, termasuk perangkat daerah
+     * pemilik dan penanggung jawab.
+     *
+     * @group Kendaraan (KDO)
+     * @urlParam id int required ID kendaraan. Example: 1
      */
     public function show(Kendaraan $kendaraan): KendaraanResource
     {
@@ -71,7 +99,12 @@ class KendaraanController extends Controller
     }
 
     /**
-     * PUT/PATCH /api/v1/kendaraan/{kendaraan}
+     * Ubah kendaraan (KDO)
+     *
+     * Memperbarui data kendaraan. Hanya admin.
+     *
+     * @group Kendaraan (KDO)
+     * @urlParam id int required ID kendaraan. Example: 1
      */
     public function update(UpdateKendaraanRequest $request, Kendaraan $kendaraan): KendaraanResource
     {
@@ -83,7 +116,13 @@ class KendaraanController extends Controller
     }
 
     /**
-     * DELETE /api/v1/kendaraan/{kendaraan}
+     * Hapus kendaraan (KDO)
+     *
+     * Menghapus data kendaraan. Hanya admin.
+     *
+     * @group Kendaraan (KDO)
+     * @urlParam id int required ID kendaraan. Example: 1
+     * @response 204 scenario="sukses"
      */
     public function destroy(Kendaraan $kendaraan): Response
     {
@@ -93,9 +132,16 @@ class KendaraanController extends Controller
     }
 
     /**
-     * PUT /api/v1/kendaraan/{kendaraan}/penanggung-jawab
-     * Menetapkan / mengganti / melepas penanggung jawab kendaraan.
-     * Body: { "pegawai_id": 3 } atau { "pegawai_id": null } untuk melepas.
+     * Tetapkan penanggung jawab kendaraan
+     *
+     * Menetapkan, mengganti, atau melepas pegawai penanggung jawab sebuah kendaraan.
+     * Hanya admin. Pegawai harus berasal dari perangkat daerah pemilik kendaraan.
+     *
+     * @group Kendaraan (KDO)
+     * @urlParam id int required ID kendaraan. Example: 2
+     * @bodyParam pegawai_id int Opsional, ID pegawai penanggung jawab; null untuk melepas penugasan. Example: 2
+     * @response 200 scenario="sukses" {"data":{"id":2,"nomor_polisi":"DK 5678 CD","penanggung_jawab":{"id":2,"nama":"Siti Rahmawati"}}}
+     * @response 422 scenario="PJ beda PD" {"message":"...","errors":{"pegawai_id":["Penanggung jawab harus pegawai dari perangkat daerah yang sama."]}}
      */
     public function assignPenanggungJawab(AssignPenanggungJawabRequest $request, Kendaraan $kendaraan): KendaraanResource
     {

@@ -81,10 +81,20 @@ npm run dev                 # http://localhost:5173
 
 ## Dokumentasi API
 
-- Dokumen interaktif (Scribe): tersedia di `docs/api/` — *(akan di-generate pada fase dokumentasi)*
-- Postman collection: `docs/postman/` — *(tersedia pada fase dokumentasi)*
+- **Dokumen interaktif (HTML)**: buka [`docs/api/index.html`](docs/api/index.html) langsung di browser — berisi seluruh endpoint, parameter, contoh request/response, dan tombol *Try It Out*
+- **Postman collection**: import file [`docs/postman/sistem-kdo.postman_collection.json`](docs/postman/sistem-kdo.postman_collection.json) ke Postman
+- **Spesifikasi OpenAPI**: [`docs/api/openapi.yaml`](docs/api/openapi.yaml) (dapat diimport ke Swagger UI/Insomnia)
 
-Base URL API: `http://localhost:8000/api/v1`
+Base URL API: `http://localhost:8000/api/v1` · Autentikasi: bearer token Sanctum (`Authorization: Bearer {token}`)
+
+Akun uji (dari seeder):
+
+| Email | Password | Role |
+|---|---|---|
+| `admin@kdo.test` | `password123` | admin (CRUD penuh) |
+| `viewer@kdo.test` | `password123` | viewer (hanya baca) |
+
+Dokumentasi di-generate dengan [Scribe](https://scribe.knuckles.wtf) — regenerasi via `php artisan scribe:generate`.
 
 ## Penggunaan AI dalam Pembangunan Aplikasi
 
