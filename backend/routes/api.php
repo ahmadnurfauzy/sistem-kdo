@@ -12,9 +12,10 @@ use Illuminate\Support\Facades\Route;
 | REST API Sistem KDO — versi 1
 |--------------------------------------------------------------------------
 | Semua endpoint berada di bawah prefix /api/v1. Autentikasi memakai
-| bearer token Sanctum. Pemisahan akses:
-|   - READ  (GET)  : semua pengguna terautentikasi (admin & viewer)
-|   - WRITE (mutasi): hanya role admin (middleware 'admin')
+| bearer token Sanctum. Pemisahan akses (Gate bawaan Laravel):
+|   - READ  (GET)  : semua pengguna terautentikasi (admin, pengelola, pengguna)
+|   - WRITE data    : admin & pengelola  (middleware 'can:manage-data')
+|   - Kelola akun   : hanya admin        (middleware 'can:manage-users')
 */
 
 Route::prefix('v1')->group(function (): void {
@@ -40,8 +41,8 @@ Route::prefix('v1')->group(function (): void {
 
         Route::get('/laporan/kondisi', [LaporanController::class, 'kondisi']);
 
-        // ---------- WRITE: hanya admin ----------
-        Route::middleware('admin')->group(function (): void {
+        // ---------- WRITE: admin & pengelola ----------
+        Route::middleware('can:manage-data')->group(function (): void {
             Route::post('/perangkat-daerah', [PerangkatDaerahController::class, 'store']);
             Route::put('/perangkat-daerah/{perangkat_daerah}', [PerangkatDaerahController::class, 'update']);
             Route::patch('/perangkat-daerah/{perangkat_daerah}', [PerangkatDaerahController::class, 'update']);

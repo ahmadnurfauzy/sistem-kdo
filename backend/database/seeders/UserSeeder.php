@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\Hash;
 class UserSeeder extends Seeder
 {
     /**
-     * Akun uji: admin (CRUD penuh) dan viewer (hanya baca).
+     * Akun uji tiga role: admin (CRUD data + kelola akun),
+     * pengelola (CRUD data), pengguna (hanya baca).
      * Password sengaja sederhana untuk keperluan pengujian lokal.
      */
     public function run(): void
@@ -23,10 +24,18 @@ class UserSeeder extends Seeder
         ]);
 
         User::create([
-            'name' => 'Pengamat KDO',
-            'email' => 'viewer@kdo.test',
+            'name' => 'Pengelola KDO',
+            'email' => 'pengelola@kdo.test',
             'password' => Hash::make('password123'),
-            'role' => 'viewer',
+            'role' => 'pengelola',
+            'email_verified_at' => now(),
+        ]);
+
+        User::create([
+            'name' => 'Pengguna KDO',
+            'email' => 'pengguna@kdo.test',
+            'password' => Hash::make('password123'),
+            'role' => 'pengguna',
             'email_verified_at' => now(),
         ]);
     }

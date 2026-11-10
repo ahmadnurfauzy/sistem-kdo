@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Middleware\EnsureUserIsAdmin;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -22,10 +21,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // alias middleware role: dipakai sebagai ->middleware('admin')
-        $middleware->alias([
-            'admin' => EnsureUserIsAdmin::class,
-        ]);
+        // proteksi akses tulis memakai Gate bawaan Laravel (lihat AppServiceProvider),
+        // dipasang di route sebagai ->middleware('can:manage-data'|'can:manage-users')
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         // semua request API selalu dirender sebagai JSON
@@ -62,6 +59,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
             $message = match (true) {
                 $e instanceof AuthenticationException => 'Tidak terautentikasi. Sertakan token yang valid.',
+                $e instanceof AuthorizationException && $e->getMessage() !== '' => $e->getMessage(),
                 $e instanceof AuthorizationException => 'Akses ditolak.',
                 $e instanceof ModelNotFoundException,
                 $e instanceof NotFoundHttpException => 'Data tidak ditemukan.',
