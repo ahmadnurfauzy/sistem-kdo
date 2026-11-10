@@ -111,7 +111,7 @@ function fieldError(field) {
       title="Perangkat daerah"
       subtitle="Instansi pengguna / pemilik kendaraan dinas"
     >
-      <button v-if="auth.isAdmin" class="btn btn-primary" @click="bukaTambah">
+      <button v-if="auth.canWrite" class="btn btn-primary" @click="bukaTambah">
         <i class="bi bi-plus-lg me-1"></i>Tambah perangkat daerah
       </button>
     </PageHeader>
@@ -190,21 +190,21 @@ function fieldError(field) {
       <template #actions="{ row }">
         <div class="row-actions">
           <button
-            v-if="auth.isAdmin"
+            v-if="auth.canWrite"
             class="icon-btn"
             aria-label="Ubah" title="Ubah"
             @click="bukaEdit(row)"
           >
             <i class="bi bi-pencil"></i>
           </button>
-          <button v-if="auth.isAdmin" class="icon-btn danger" aria-label="Hapus" title="Hapus" @click="toDelete = row">
+          <button v-if="auth.canWrite" class="icon-btn danger" aria-label="Hapus" title="Hapus" @click="toDelete = row">
             <i class="bi bi-trash3"></i>
           </button>
         </div>
       </template>
 
       <template #empty>
-        <button v-if="auth.isAdmin" class="btn btn-primary btn-sm" @click="bukaTambah">Tambah perangkat daerah</button>
+        <button v-if="auth.canWrite" class="btn btn-primary btn-sm" @click="bukaTambah">Tambah perangkat daerah</button>
       </template>
     </DataTable>
 

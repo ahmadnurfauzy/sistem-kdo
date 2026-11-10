@@ -101,7 +101,7 @@ async function confirmDelete() {
       title="Pegawai Negeri Sipil"
       :subtitle="meta ? `${meta.total} pegawai terdata` : 'Memuat data…'"
     >
-      <router-link v-if="auth.isAdmin" :to="{ name: 'pegawai.create' }" class="btn btn-primary">
+      <router-link v-if="auth.canWrite" :to="{ name: 'pegawai.create' }" class="btn btn-primary">
         <i class="bi bi-plus-lg me-1"></i>Tambah pegawai
       </router-link>
     </PageHeader>
@@ -161,14 +161,14 @@ async function confirmDelete() {
       <template #actions="{ row }">
         <div class="row-actions">
           <router-link
-            v-if="auth.isAdmin"
+            v-if="auth.canWrite"
             class="icon-btn"
             :to="{ name: 'pegawai.edit', params: { id: row.id } }"
             aria-label="Ubah" title="Ubah"
           >
             <i class="bi bi-pencil"></i>
           </router-link>
-          <button v-if="auth.isAdmin" class="icon-btn danger" aria-label="Hapus" title="Hapus" @click="toDelete = row">
+          <button v-if="auth.canWrite" class="icon-btn danger" aria-label="Hapus" title="Hapus" @click="toDelete = row">
             <i class="bi bi-trash3"></i>
           </button>
         </div>
@@ -176,7 +176,7 @@ async function confirmDelete() {
 
       <template #empty>
         <button class="btn btn-soft btn-sm me-2" @click="resetFilter">Reset filter</button>
-        <router-link v-if="auth.isAdmin" :to="{ name: 'pegawai.create' }" class="btn btn-primary btn-sm">Tambah pegawai</router-link>
+        <router-link v-if="auth.canWrite" :to="{ name: 'pegawai.create' }" class="btn btn-primary btn-sm">Tambah pegawai</router-link>
       </template>
     </DataTable>
 

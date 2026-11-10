@@ -89,7 +89,7 @@ async function confirmDelete() {
         <router-link class="btn btn-soft mb-2" :to="{ name: 'kendaraan.index' }">
           <i class="bi bi-arrow-left me-1"></i>Kembali
         </router-link>
-        <template v-if="auth.isAdmin && kendaraan">
+        <template v-if="auth.canWrite && kendaraan">
           <router-link
             class="btn btn-primary mb-2"
             :to="{ name: 'kendaraan.edit', params: { id: kendaraan.id } }"
@@ -165,7 +165,7 @@ async function confirmDelete() {
               <i class="bi bi-info-circle mt-1"></i><span>{{ notifikasi }}</span>
             </div>
 
-            <template v-if="auth.isAdmin">
+            <template v-if="auth.canWrite">
               <div class="row g-2 align-items-end">
                 <div class="col-md-8">
                   <label class="form-label" for="pilih-pj">Pegawai (PNS) penanggung jawab</label>

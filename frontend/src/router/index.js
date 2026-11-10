@@ -5,6 +5,7 @@ import { useAuthStore } from '../stores/auth'
  * Rute SPA. Guard:
  * - halaman selain /login wajib memiliki token
  * - pengguna yang sudah login tidak bisa kembali ke /login
+ * - halaman ber-meta requiresAdmin (kelola akun) hanya untuk role admin
  */
 const router = createRouter({
   history: createWebHistory(),
@@ -66,6 +67,12 @@ const router = createRouter({
       component: () => import('../views/LaporanView.vue'),
     },
     {
+      path: '/akun',
+      name: 'akun.index',
+      component: () => import('../views/AkunView.vue'),
+      meta: { requiresAdmin: true },
+    },
+    {
       path: '/:pathMatch(.*)*',
       redirect: { name: 'dashboard' },
     },
@@ -81,6 +88,11 @@ router.beforeEach((to) => {
 
   if (!to.meta.guest && !auth.isAuthenticated) {
     return { name: 'login' }
+  }
+
+  // halaman khusus admin (mis. /akun) — role lain dialihkan ke dashboard
+  if (to.meta.requiresAdmin && !auth.isAdmin) {
+    return { name: 'dashboard' }
   }
 })
 

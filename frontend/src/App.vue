@@ -15,6 +15,13 @@ const nav = [
   { name: 'laporan.index', label: 'Laporan', short: 'Laporan', icon: 'bi-bar-chart-line', match: '/laporan' },
 ]
 
+/** Menu topnav: admin mendapat menu "Akun" tambahan (tidak masuk bottom nav). */
+const navTop = computed(() =>
+  auth.isAdmin
+    ? [...nav, { name: 'akun.index', label: 'Akun', icon: 'bi-person-gear', match: '/akun' }]
+    : nav,
+)
+
 function isActive(item) {
   return item.match === '/' ? route.path === '/' : route.path.startsWith(item.match)
 }
@@ -27,6 +34,14 @@ const initials = computed(() =>
     .join('')
     .toUpperCase(),
 )
+
+/**
+ * Tutup dropdown pengguna (mobile): dropdown hanya menutup saat klik
+ * di luar menu — simulasikan klik pada body.
+ */
+function closeUserDropdown() {
+  document.body.click()
+}
 
 async function handleLogout() {
   await auth.logout()
@@ -48,7 +63,7 @@ async function handleLogout() {
 
         <nav class="topnav d-none d-lg-flex">
           <router-link
-            v-for="item in nav"
+            v-for="item in navTop"
             :key="item.name"
             :to="{ name: item.name }"
             class="topnav-link"
@@ -70,6 +85,12 @@ async function handleLogout() {
               <div class="fw-semibold">{{ auth.user?.name }}</div>
               <span class="role-tag">{{ auth.user?.role }}</span>
             </li>
+            <li v-if="auth.isAdmin" class="d-lg-none">
+              <router-link class="dropdown-item" :to="{ name: 'akun.index' }" @click="closeUserDropdown">
+                <i class="bi bi-person-gear me-2"></i>Akun
+              </router-link>
+            </li>
+            <li class="d-lg-none"><hr class="dropdown-divider" /></li>
             <li>
               <button class="dropdown-item" @click="handleLogout">
                 <i class="bi bi-box-arrow-right me-2"></i>Keluar

@@ -13,6 +13,8 @@ export const useAuthStore = defineStore('auth', {
   getters: {
     isAuthenticated: (state) => Boolean(state.token),
     isAdmin: (state) => state.user?.role === 'admin',
+    /** boleh menulis data (CRUD KDO/PNS/PD): admin & pengelola */
+    canWrite: (state) => ['admin', 'pengelola'].includes(state.user?.role),
   },
 
   actions: {
