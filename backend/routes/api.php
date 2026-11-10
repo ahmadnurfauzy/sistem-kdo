@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AkunController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\KendaraanController;
 use App\Http\Controllers\Api\LaporanController;
@@ -60,6 +61,16 @@ Route::prefix('v1')->group(function (): void {
 
             // endpoint khusus: tetapkan/ganti/lepas penanggung jawab kendaraan
             Route::put('/kendaraan/{kendaraan}/penanggung-jawab', [KendaraanController::class, 'assignPenanggungJawab']);
+        });
+
+        // ---------- AKUN: kelola pengguna sistem, hanya admin ----------
+        Route::middleware('can:manage-users')->prefix('akun')->group(function (): void {
+            Route::get('/', [AkunController::class, 'index'])->name('akun.index');
+            Route::post('/', [AkunController::class, 'store'])->name('akun.store');
+            Route::get('/{akun}', [AkunController::class, 'show'])->name('akun.show');
+            Route::put('/{akun}', [AkunController::class, 'update'])->name('akun.update');
+            Route::patch('/{akun}', [AkunController::class, 'update']);
+            Route::delete('/{akun}', [AkunController::class, 'destroy'])->name('akun.destroy');
         });
     });
 });
