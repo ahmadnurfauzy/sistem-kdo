@@ -12,8 +12,7 @@ Sistem informasi untuk mengelola data Kendaraan Dinas Operasional (KDO) milik pe
 - 🏛️ **Pengelolaan Perangkat Daerah** — data instansi pengguna/pemilik kendaraan
 - 📊 Laporan rekap kondisi kendaraan per perangkat daerah
 - 📚 REST API terdokumentasi (Scribe + Postman collection)
-
-*(Daftar fitur akan diperbarui seiring fase pengembangan.)*
+- 🖥️ Antarmuka web SPA (Vue 3) — dashboard statistik, CRUD 3 entitas, assign PJ, laporan
 
 ## Tech Stack
 
