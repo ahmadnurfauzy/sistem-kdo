@@ -1,7 +1,4 @@
 <script setup>
-/**
- * Modal konfirmasi sederhana (dikelola Vue, cukup class CSS Bootstrap).
- */
 defineProps({
   visible: { type: Boolean, default: false },
   title: { type: String, default: 'Konfirmasi' },
@@ -16,24 +13,20 @@ defineEmits(['confirm', 'cancel'])
 <template>
   <div v-if="visible">
     <div class="modal-backdrop-custom" @click="$emit('cancel')"></div>
-    <div class="modal d-block" tabindex="-1">
-      <div class="modal-dialog modal-dialog-centered">
+    <div class="modal d-block" tabindex="-1" role="dialog" aria-modal="true">
+      <div class="modal-dialog modal-dialog-centered px-2">
         <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">{{ title }}</h5>
-            <button type="button" class="btn-close" @click="$emit('cancel')"></button>
-          </div>
-          <div class="modal-body">
-            <p class="mb-0">{{ message }}</p>
-          </div>
-          <div class="modal-footer">
-            <button class="btn btn-secondary" :disabled="busy" @click="$emit('cancel')">
-              Batal
-            </button>
-            <button class="btn btn-danger" :disabled="busy" @click="$emit('confirm')">
-              <span v-if="busy" class="spinner-border spinner-border-sm me-1"></span>
-              {{ confirmLabel }}
-            </button>
+          <div class="modal-body text-center p-4">
+            <div class="confirm-icon"><i class="bi bi-trash3"></i></div>
+            <h5 class="mb-2">{{ title }}</h5>
+            <p class="text-secondary mb-4">{{ message }}</p>
+            <div class="d-flex gap-2">
+              <button class="btn btn-soft flex-fill" :disabled="busy" @click="$emit('cancel')">Batal</button>
+              <button class="btn btn-danger flex-fill" :disabled="busy" @click="$emit('confirm')">
+                <span v-if="busy" class="spinner-border spinner-border-sm me-1"></span>
+                {{ confirmLabel }}
+              </button>
+            </div>
           </div>
         </div>
       </div>
