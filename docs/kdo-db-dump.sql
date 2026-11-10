@@ -202,21 +202,21 @@ CREATE TABLE `kendaraan` (
 LOCK TABLES `kendaraan` WRITE;
 /*!40000 ALTER TABLE `kendaraan` DISABLE KEYS */;
 INSERT INTO `kendaraan` VALUES
-(1,'DK 1234 AB','Toyota','Avanza 1.5 G',2021,'Putih','baik',1,1,'2026-11-09 22:15:33','2026-11-09 22:15:33'),
-(2,'DK 5678 CD','Toyota','Hiace Commuter',2019,'Putih','rusak_ringan',1,NULL,'2026-11-09 22:15:33','2026-11-09 22:15:33'),
-(3,'DK 2345 EF','Mitsubishi','Pajero Sport Dakar',2020,'Hitam','baik',2,3,'2026-11-09 22:15:33','2026-11-09 22:15:33'),
-(4,'DK 3456 GH','Toyota','Kijang Innova Reborn',2018,'Silver','baik',2,4,'2026-11-09 22:15:33','2026-11-09 22:15:33'),
-(5,'DK 7890 IJ','Suzuki','Ertiga',2017,'Abu-abu','rusak_ringan',2,5,'2026-11-09 22:15:33','2026-11-09 22:15:33'),
-(6,'DK 4567 KL','Toyota','Hiace Ambulance',2020,'Putih','baik',3,6,'2026-11-09 22:15:33','2026-11-09 22:15:33'),
-(7,'DK 8901 MN','Nissan','Urvan',2016,'Putih','rusak_berat',3,7,'2026-11-09 22:15:33','2026-11-09 22:15:33'),
-(8,'DK 1122 OP','Honda','BR-V',2022,'Merah','baik',3,NULL,'2026-11-09 22:15:33','2026-11-09 22:15:33'),
-(9,'DK 2233 QR','Toyota','Fortuner VRZ',2021,'Hitam','baik',4,8,'2026-11-09 22:15:33','2026-11-09 22:15:33'),
-(10,'DK 3344 ST','Daihatsu','Gran Max Minibus',2018,'Putih','rusak_ringan',4,9,'2026-11-09 22:15:33','2026-11-09 22:15:33'),
-(11,'DK 5566 UV','Isuzu','Elf Long Chasis',2015,'Putih','rusak_berat',4,NULL,'2026-11-09 22:15:33','2026-11-09 22:15:33'),
-(12,'DK 6677 WX','Toyota','Hilux Double Cabin',2020,'Putih','baik',5,10,'2026-11-09 22:15:33','2026-11-09 22:15:33'),
-(13,'DK 8899 YZ','Mitsubishi','Triton HDX',2019,'Putih','rusak_ringan',5,11,'2026-11-09 22:15:33','2026-11-09 22:15:33'),
-(14,'DK 9900 AA','Toyota','Vios',2018,'Silver','baik',6,12,'2026-11-09 22:15:33','2026-11-09 22:15:33'),
-(15,'DK 1010 BC','Daihatsu','Luxio',2016,'Hitam','baik',6,NULL,'2026-11-09 22:15:33','2026-11-09 22:15:33');
+(1,'DK 1234 AB','Toyota','Avanza 1.5 G',2021,'Putih','baik',1,1,'2026-11-09 22:25:13','2026-11-09 22:25:13'),
+(2,'DK 5678 CD','Toyota','Hiace Commuter',2019,'Putih','rusak_ringan',1,NULL,'2026-11-09 22:25:13','2026-11-09 22:25:13'),
+(3,'DK 2345 EF','Mitsubishi','Pajero Sport Dakar',2020,'Hitam','baik',2,3,'2026-11-09 22:25:13','2026-11-09 22:25:13'),
+(4,'DK 3456 GH','Toyota','Kijang Innova Reborn',2018,'Silver','baik',2,4,'2026-11-09 22:25:13','2026-11-09 22:25:13'),
+(5,'DK 7890 IJ','Suzuki','Ertiga',2017,'Abu-abu','rusak_ringan',2,5,'2026-11-09 22:25:13','2026-11-09 22:25:13'),
+(6,'DK 4567 KL','Toyota','Hiace Ambulance',2020,'Putih','baik',3,6,'2026-11-09 22:25:13','2026-11-09 22:25:13'),
+(7,'DK 8901 MN','Nissan','Urvan',2016,'Putih','rusak_berat',3,7,'2026-11-09 22:25:13','2026-11-09 22:25:13'),
+(8,'DK 1122 OP','Honda','BR-V',2022,'Merah','baik',3,NULL,'2026-11-09 22:25:13','2026-11-09 22:25:13'),
+(9,'DK 2233 QR','Toyota','Fortuner VRZ',2021,'Hitam','baik',4,8,'2026-11-09 22:25:13','2026-11-09 22:25:13'),
+(10,'DK 3344 ST','Daihatsu','Gran Max Minibus',2018,'Putih','rusak_ringan',4,9,'2026-11-09 22:25:13','2026-11-09 22:25:13'),
+(11,'DK 5566 UV','Isuzu','Elf Long Chasis',2015,'Putih','rusak_berat',4,NULL,'2026-11-09 22:25:13','2026-11-09 22:25:13'),
+(12,'DK 6677 WX','Toyota','Hilux Double Cabin',2020,'Putih','baik',5,10,'2026-11-09 22:25:13','2026-11-09 22:25:13'),
+(13,'DK 8899 YZ','Mitsubishi','Triton HDX',2019,'Putih','rusak_ringan',5,11,'2026-11-09 22:25:13','2026-11-09 22:25:13'),
+(14,'DK 9900 AA','Toyota','Vios',2018,'Silver','baik',6,12,'2026-11-09 22:25:13','2026-11-09 22:25:13'),
+(15,'DK 1010 BC','Daihatsu','Luxio',2016,'Hitam','baik',6,NULL,'2026-11-09 22:25:13','2026-11-09 22:25:13');
 /*!40000 ALTER TABLE `kendaraan` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -307,18 +307,18 @@ CREATE TABLE `pegawai` (
 LOCK TABLES `pegawai` WRITE;
 /*!40000 ALTER TABLE `pegawai` DISABLE KEYS */;
 INSERT INTO `pegawai` VALUES
-(1,'Budi Santoso','197504121998031001','Kepala Bagian Umum','IV/b',1,'2026-11-09 22:15:33','2026-11-09 22:15:33'),
-(2,'Siti Rahmawati','198009232005042002','Kepala Sub Bagian Kepegawaian','III/d',1,'2026-11-09 22:15:33','2026-11-09 22:15:33'),
-(3,'Ahmad Hidayat','196811051994031004','Kepala Dinas Pendidikan','IV/c',2,'2026-11-09 22:15:33','2026-11-09 22:15:33'),
-(4,'Dewi Lestari','199001172015032007','Pengelola Barang Milik Daerah','III/a',2,'2026-11-09 22:15:33','2026-11-09 22:15:33'),
-(5,'Rizki Pratama','198506302010121003','Kepala Sub Bagian Sarana Prasarana','III/c',2,'2026-11-09 22:15:33','2026-11-09 22:15:33'),
-(6,'Endang Kusmiati','197208151999022001','Kepala Dinas Kesehatan','IV/b',3,'2026-11-09 22:15:33','2026-11-09 22:15:33'),
-(7,'Agus Wibowo','199303282018101002','Analis Kesehatan','III/a',3,'2026-11-09 22:15:33','2026-11-09 22:15:33'),
-(8,'Hendra Gunawan','197907092006041005','Kepala Bidang Angkutan Darat','IV/a',4,'2026-11-09 22:15:33','2026-11-09 22:15:33'),
-(9,'Maya Puspita','198812012013062001','Pengadministrasi Perhubungan','III/b',4,'2026-11-09 22:15:33','2026-11-09 22:15:33'),
-(10,'Slamet Riyadi','197402202000011006','Kepala Bidang Bina Marga','IV/a',5,'2026-11-09 22:15:33','2026-11-09 22:15:33'),
-(11,'Fitri Handayani','199205162016112003','Pengelola Keuangan','III/a',5,'2026-11-09 22:15:33','2026-11-09 22:15:33'),
-(12,'Taufik Hidayat','198103112008091004','Kepala Badan Kepegawaian Daerah','IV/b',6,'2026-11-09 22:15:33','2026-11-09 22:15:33');
+(1,'Budi Santoso','197504121998031001','Kepala Bagian Umum','IV/b',1,'2026-11-09 22:25:13','2026-11-09 22:25:13'),
+(2,'Siti Rahmawati','198009232005042002','Kepala Sub Bagian Kepegawaian','III/d',1,'2026-11-09 22:25:13','2026-11-09 22:25:13'),
+(3,'Ahmad Hidayat','196811051994031004','Kepala Dinas Pendidikan','IV/c',2,'2026-11-09 22:25:13','2026-11-09 22:25:13'),
+(4,'Dewi Lestari','199001172015032007','Pengelola Barang Milik Daerah','III/a',2,'2026-11-09 22:25:13','2026-11-09 22:25:13'),
+(5,'Rizki Pratama','198506302010121003','Kepala Sub Bagian Sarana Prasarana','III/c',2,'2026-11-09 22:25:13','2026-11-09 22:25:13'),
+(6,'Endang Kusmiati','197208151999022001','Kepala Dinas Kesehatan','IV/b',3,'2026-11-09 22:25:13','2026-11-09 22:25:13'),
+(7,'Agus Wibowo','199303282018101002','Analis Kesehatan','III/a',3,'2026-11-09 22:25:13','2026-11-09 22:25:13'),
+(8,'Hendra Gunawan','197907092006041005','Kepala Bidang Angkutan Darat','IV/a',4,'2026-11-09 22:25:13','2026-11-09 22:25:13'),
+(9,'Maya Puspita','198812012013062001','Pengadministrasi Perhubungan','III/b',4,'2026-11-09 22:25:13','2026-11-09 22:25:13'),
+(10,'Slamet Riyadi','197402202000011006','Kepala Bidang Bina Marga','IV/a',5,'2026-11-09 22:25:13','2026-11-09 22:25:13'),
+(11,'Fitri Handayani','199205162016112003','Pengelola Keuangan','III/a',5,'2026-11-09 22:25:13','2026-11-09 22:25:13'),
+(12,'Taufik Hidayat','198103112008091004','Kepala Badan Kepegawaian Daerah','IV/b',6,'2026-11-09 22:25:13','2026-11-09 22:25:13');
 /*!40000 ALTER TABLE `pegawai` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -347,12 +347,12 @@ CREATE TABLE `perangkat_daerah` (
 LOCK TABLES `perangkat_daerah` WRITE;
 /*!40000 ALTER TABLE `perangkat_daerah` DISABLE KEYS */;
 INSERT INTO `perangkat_daerah` VALUES
-(1,'SETDA','Sekretariat Daerah','2026-11-09 22:15:33','2026-11-09 22:15:33'),
-(2,'DISDIK','Dinas Pendidikan','2026-11-09 22:15:33','2026-11-09 22:15:33'),
-(3,'DINKES','Dinas Kesehatan','2026-11-09 22:15:33','2026-11-09 22:15:33'),
-(4,'DISHUB','Dinas Perhubungan','2026-11-09 22:15:33','2026-11-09 22:15:33'),
-(5,'DPUPR','Dinas Pekerjaan Umum dan Penataan Ruang','2026-11-09 22:15:33','2026-11-09 22:15:33'),
-(6,'BKD','Badan Kepegawaian Daerah','2026-11-09 22:15:33','2026-11-09 22:15:33');
+(1,'SETDA','Sekretariat Daerah','2026-11-09 22:25:12','2026-11-09 22:25:12'),
+(2,'DISDIK','Dinas Pendidikan','2026-11-09 22:25:13','2026-11-09 22:25:13'),
+(3,'DINKES','Dinas Kesehatan','2026-11-09 22:25:13','2026-11-09 22:25:13'),
+(4,'DISHUB','Dinas Perhubungan','2026-11-09 22:25:13','2026-11-09 22:25:13'),
+(5,'DPUPR','Dinas Pekerjaan Umum dan Penataan Ruang','2026-11-09 22:25:13','2026-11-09 22:25:13'),
+(6,'BKD','Badan Kepegawaian Daerah','2026-11-09 22:25:13','2026-11-09 22:25:13');
 /*!40000 ALTER TABLE `perangkat_daerah` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -448,14 +448,10 @@ CREATE TABLE `users` (
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
 INSERT INTO `users` VALUES
-(1,'Administrator KDO','admin@kdo.test','2026-11-09 22:15:33','$2y$12$yUspcaTtm0KyAlsXNT7xweLy5u7xSnBWP1tPeEAdzV7dLrjzradw.','admin',NULL,'2026-11-09 22:15:33','2026-11-09 22:15:33'),
-(2,'Pengamat KDO','viewer@kdo.test','2026-11-09 22:15:34','$2y$12$PDZ6SrzkF/9I8oGb66500.g3MPXPIMnbRWVMOS8gKkz8KRXMG4JYK','viewer',NULL,'2026-11-09 22:15:34','2026-11-09 22:15:34');
+(1,'Administrator KDO','admin@kdo.test','2026-11-09 22:25:13','$2y$12$EXwzRdwQk8RGL64Cp3rAvOAgWz7dsqNRtAhSrIJGlwvZjg7FyHi32','admin',NULL,'2026-11-09 22:25:13','2026-11-09 22:25:13'),
+(2,'Pengamat KDO','viewer@kdo.test','2026-11-09 22:25:13','$2y$12$zcH/sLXE6h42dg9EItZUb.6MSOzhOXx9TtOXGwHqyOs9egIgoZtQG','viewer',NULL,'2026-11-09 22:25:13','2026-11-09 22:25:13');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
-
---
--- Dumping routines for database 'kdo_db'
---
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -466,4 +462,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-11-10 12:15:55
+-- Dump completed on 2026-11-10 12:25:14

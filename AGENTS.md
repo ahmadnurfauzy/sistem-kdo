@@ -97,7 +97,7 @@ Setiap penambahan fitur baru wajib diikuti pembaruan:
 - [x] Fase 1 — fondasi repo: scaffold backend + frontend, docs awal, commit pertama
 - [x] Fase 2 — database: migration, model, seeder, dump awal (6 PD, 12 PNS, 15 KDO, 2 user)
 - [x] Fase 3 — auth & keamanan dasar (Sanctum, role admin/viewer, throttle, CORS)
-- [ ] Fase 4 — REST API CRUD (inti)
+- [x] Fase 4 — REST API CRUD (inti): PD, PNS, KDO + assign PJ + laporan, teruji menyeluruh
 - [ ] Fase 5 — dokumentasi API (Scribe + Postman)
 - [ ] Fase 6 — frontend Vue 3
 - [ ] Fase 7 — finalisasi & pengumpulan
