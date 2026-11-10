@@ -1,0 +1,24 @@
+# OS / junk files
+.DS_Store
+Thumbs.db
+desktop.ini
+*.log
+*.tmp
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+
+# Env & secrets (tidak pernah di-commit)
+.env
+.env.*
+!.env.example
+
+# Dependency & build artifacts
+node_modules/
+vendor/
+dist/
+build/
+*.key
