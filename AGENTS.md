@@ -61,7 +61,7 @@ sistem-kdo/
    - Kolom/FK: snake_case dengan suffix `_id` (contoh: `perangkat_daerah_id`).
 7. **Keamanan dasar** (kriteria penilaian):
    - Autentikasi via **Sanctum** bearer token; proteksi route dengan middleware `auth:sanctum`.
-   - Role: `admin` (boleh CRUD) dan `viewer` (hanya read) — middleware role pada semua route mutasi.
+   - Role tiga tingkat via **Gate** bawaan Laravel (didefinisikan di `AppServiceProvider`): `admin` (CRUD data + kelola akun), `pengelola` (CRUD data), `pengguna` (hanya baca). Route mutasi memakai middleware `can:manage-data`; route `/akun` memakai `can:manage-users`. Pesan 403 kustom via `Response::deny`.
    - Rate limiting `throttle:api` pada route API.
    - Model memakai `$fillable` (whelist), password tidak pernah boleh muncul di respons/resource.
    - Password disimpan ter-hash (bcrypt bawaan Laravel).
@@ -71,8 +71,8 @@ sistem-kdo/
 - Struktur: `src/router/` (route + guard), `src/stores/` (Pinia), `src/api/` (modul Axios per entitas), `src/views/` (halaman), `src/components/` (komponen umum).
 - Semua panggilan API lewat instance Axios terpusat dengan **interceptor** token (`Authorization: Bearer ...`) dan penanganan 401 (auto-logout).
 - State sesi (token, profil, role) dikelola Pinia dan dipertahankan di `localStorage`.
-- Router guard: halaman selain `/login` wajib punya token; tombol/menu aksi tulis hanya tampil untuk role `admin`.
-- Styling: Bootstrap 5 (class utilitas/komponen), konsisten tiap halaman (navbar, tabel, form, modal).
+- Router guard: halaman selain `/login` wajib punya token; halaman kelola akun (`/akun`) hanya role admin (meta `requiresAdmin`); tombol/menu aksi tulis data tampil untuk getter `canWrite` (admin & pengelola), aksi kelola akun untuk `isAdmin`.
+- Styling: Bootstrap 5 + token desain kustom `--kdo-*` di `src/style.css`. **Wajib mengikuti [docs/UI-REDESIGN.md](docs/UI-REDESIGN.md) dan [docs/UI-TABLE.md](docs/UI-TABLE.md)** — gunakan komponen bersama (`PageHeader`, `StatCard`, `KondisiBadge`, `DataTable`, `ConfirmModal`), pola toolbar + card mobile, placeholder instruksional "Masukkan …" + helper contoh, dan **tanpa emoji** di UI (pakai Bootstrap Icons).
 
 ## 6. Aturan Git & Workflow
 
@@ -101,8 +101,12 @@ Setiap penambahan fitur baru wajib diikuti pembaruan:
 - [x] Fase 5 — dokumentasi API (Scribe HTML + Postman collection + OpenAPI)
 - [x] Fase 6 — frontend Vue 3: login, dashboard, CRUD 3 entitas, assign PJ, laporan
 - [x] Fase 7 — finalisasi & pengumpulan (dump final, README final, push)
-- [ ] Fase 8 — bonus (riwayat kondisi/PJ, kolom tambahan, export, foto)
+- [x] Fase 8 — UI redesign menyeluruh (10 langkah sesuai docs/UI-REDESIGN.md) + role tiga tingkat admin/pengelola/pengguna + CRUD akun `/api/v1/akun`
+- [ ] Fase 9 — bonus (riwayat kondisi/PJ, kolom tambahan, export, foto)
 
 ## 9. Deklarasi Penggunaan AI
 
-Aplikasi dibangun menggunakan **OpenCode** dengan model AI **Big Pickle**. Seluruh proses development (scaffold, kode, dokumen) dibantu AI di bawah arahan dan review pemilik repo.
+Aplikasi dibangun dengan bantuan dua tools AI di bawah arahan dan review pemilik repo:
+
+1. **OpenCode** (model AI **Big Pickle**) — development utama: scaffold, kode backend/frontend, skema database, endpoint, pengujian, dokumentasi.
+2. **Claude.ai** (model **Sonnet 5.5**) — perancangan ulang antarmuka pengguna (UI redesign) aplikasi.

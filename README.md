@@ -6,7 +6,7 @@ Sistem informasi untuk mengelola data Kendaraan Dinas Operasional (KDO) milik pe
 
 ## Fitur Utama
 
-- 🔐 Autentikasi login (token) dengan role **admin** (CRUD penuh) dan **viewer** (hanya baca)
+- 🔐 Autentikasi login (token) dengan role **admin** (CRUD penuh + kelola akun), **pengelola** (CRUD data), dan **pengguna** (hanya baca)
 - 🚗 **Pengelolaan KDO** — data nomor polisi, merek, tipe/model, tahun produksi, warna, kondisi (`baik` / `rusak ringan` / `rusak berat`), penanggung jawab
 - 👷 **Pengelolaan PNS** — data nama, NIP, jabatan, golongan, perangkat daerah
 - 🏛️ **Pengelolaan Perangkat Daerah** — data instansi pengguna/pemilik kendaraan
@@ -80,20 +80,21 @@ npm run dev                 # http://localhost:5173
 
 ## Ringkasan Endpoint API
 
-Base URL: `http://localhost:8000/api/v1` — autentikasi bearer token Sanctum. Read (GET) untuk semua pengguna login; mutasi hanya role admin.
+Base URL: `http://localhost:8000/api/v1` — autentikasi bearer token Sanctum. Read (GET) untuk semua pengguna login; mutasi data untuk role admin & pengelola (Gate `manage-data`); kelola akun hanya admin (Gate `manage-users`).
 
 | Method | Endpoint | Fungsi |
 |---|---|---|
 | POST | `/auth/login`, `/auth/logout` | login (dapat token) / logout |
 | GET | `/auth/me` | profil pengguna aktif |
 | GET | `/perangkat-daerah` | daftar PD (`?search=&per_page=`) |
-| POST/PUT/DELETE | `/perangkat-daerah/{id}` | tambah / ubah / hapus PD *(admin)* |
+| POST/PUT/DELETE | `/perangkat-daerah/{id}` | tambah / ubah / hapus PD *(admin, pengelola)* |
 | GET | `/pegawai` | daftar PNS (`?search=&perangkat_daerah_id=`) |
-| POST/PUT/DELETE | `/pegawai/{id}` | tambah / ubah / hapus PNS *(admin)* |
+| POST/PUT/DELETE | `/pegawai/{id}` | tambah / ubah / hapus PNS *(admin, pengelola)* |
 | GET | `/kendaraan` | daftar KDO (`?search=&kondisi=&perangkat_daerah_id=`) |
-| POST/PUT/DELETE | `/kendaraan/{id}` | tambah / ubah / hapus KDO *(admin)* |
-| PUT | `/kendaraan/{id}/penanggung-jawab` | tetapkan / ganti / lepas penanggung jawab *(admin)* |
+| POST/PUT/DELETE | `/kendaraan/{id}` | tambah / ubah / hapus KDO *(admin, pengelola)* |
+| PUT | `/kendaraan/{id}/penanggung-jawab` | tetapkan / ganti / lepas penanggung jawab *(admin, pengelola)* |
 | GET | `/laporan/kondisi` | rekap kondisi kendaraan per PD |
+| CRUD | `/akun` | kelola akun pengguna: daftar/tambah/ubah/hapus (`?search=&role=`) *(admin)* |
 
 ## Dokumentasi API
 
@@ -107,14 +108,23 @@ Akun uji (dari seeder):
 
 | Email | Password | Role |
 |---|---|---|
-| `admin@kdo.test` | `password123` | admin (CRUD penuh) |
-| `viewer@kdo.test` | `password123` | viewer (hanya baca) |
+| `admin@kdo.test` | `password123` | admin (CRUD data + kelola akun) |
+| `pengelola@kdo.test` | `password123` | pengelola (CRUD data) |
+| `pengguna@kdo.test` | `password123` | pengguna (hanya baca) |
+
+Matriks permission ringkas:
+
+| Aksi | admin | pengelola | pengguna |
+|---|---|---|---|
+| Lihat data (GET semua endpoint) | ✅ | ✅ | ✅ |
+| Tambah/ubah/hapus PD, PNS, KDO, tetap PJ | ✅ | ✅ | ❌ |
+| Kelola akun (`/akun`) | ✅ | ❌ | ❌ |
 
 Dokumentasi di-generate dengan [Scribe](https://scribe.knuckles.wtf) — regenerasi via `php artisan scribe:generate`.
 
 ## Penggunaan AI dalam Pembangunan Aplikasi
 
-> Aplikasi dibangun menggunakan **OpenCode** dengan model AI **Big Pickle**.
+> Aplikasi dibangun menggunakan dua tools AI: **OpenCode** (model AI **Big Pickle**) untuk seluruh proses development, dan **Claude.ai** (model **Sonnet 5.5**) untuk perancangan ulang antarmuka (UI redesign) aplikasi.
 
 AI digunakan sebagai asisten pemrograman di seluruh proses pembangunan: scaffolding proyek, penulisan kode backend/frontend, perancangan skema database dan endpoint, pengujian, serta penulisan dokumentasi. Seluruh arah dan keputusan teknis dilakukan oleh pemilik repositori, dan seluruh hasil ditinjau ulang sebelum di-commit. Instruksi yang diberikan kepada AI selama pembangunan terdokumentasi dalam file [AGENTS.md](AGENTS.md).
 
