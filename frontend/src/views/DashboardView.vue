@@ -3,6 +3,8 @@ import { onMounted, ref } from 'vue'
 import laporanApi from '../api/laporan'
 import kendaraanApi from '../api/kendaraan'
 import { useAuthStore } from '../stores/auth'
+import StatCard from '../components/StatCard.vue'
+import KondisiBadge from '../components/KondisiBadge.vue'
 
 const auth = useAuthStore()
 const ringkasan = ref(null)
@@ -23,106 +25,95 @@ onMounted(async () => {
 })
 
 const stats = [
-  { label: 'Total Kendaraan', key: 'total_kendaraan', icon: '🚗', color: 'primary' },
-  { label: 'Kondisi Baik', key: 'total_baik', icon: '✅', color: 'success' },
-  { label: 'Rusak Ringan', key: 'total_rusak_ringan', icon: '⚠️', color: 'warning' },
-  { label: 'Rusak Berat', key: 'total_rusak_berat', icon: '❌', color: 'danger' },
-  { label: 'Perangkat Daerah', key: 'total_perangkat_daerah', icon: '🏛️', color: 'info' },
+  { label: 'Total kendaraan', key: 'total_kendaraan', icon: 'bi-car-front', tone: 'blue' },
+  { label: 'Kondisi baik', key: 'total_baik', icon: 'bi-check-circle', tone: 'green' },
+  { label: 'Rusak ringan', key: 'total_rusak_ringan', icon: 'bi-exclamation-triangle', tone: 'amber' },
+  { label: 'Rusak berat', key: 'total_rusak_berat', icon: 'bi-x-octagon', tone: 'red' },
+  { label: 'Perangkat daerah', key: 'total_perangkat_daerah', icon: 'bi-buildings', tone: 'teal' },
+]
+
+const shortcuts = [
+  { to: 'kendaraan.index', label: 'Data kendaraan', desc: 'Kelola KDO', icon: 'bi-car-front', tone: 'blue' },
+  { to: 'pegawai.index', label: 'Data pegawai', desc: 'PNS penanggung jawab', icon: 'bi-people', tone: 'violet' },
+  { to: 'perangkat-daerah.index', label: 'Perangkat daerah', desc: 'Instansi pemilik', icon: 'bi-buildings', tone: 'teal' },
+  { to: 'laporan.index', label: 'Laporan', desc: 'Rekap kondisi', icon: 'bi-bar-chart-line', tone: 'amber' },
 ]
 </script>
 
 <template>
   <div>
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <section class="hero mb-4">
       <div>
-        <h4 class="mb-1">Dashboard</h4>
-        <p class="text-secondary mb-0">Selamat datang, {{ auth.user?.name }} 👋</p>
+        <span class="eyebrow eyebrow-light">Selamat datang</span>
+        <h1>Halo, {{ auth.user?.name }}</h1>
+        <p>Pantau kondisi kendaraan dinas operasional dan penanggung jawabnya dalam satu tempat.</p>
+        <router-link :to="{ name: 'kendaraan.index' }" class="btn btn-light">
+          Lihat kendaraan <i class="bi bi-arrow-right ms-1"></i>
+        </router-link>
       </div>
-    </div>
+      <div class="hero-art" aria-hidden="true"><i class="bi bi-car-front-fill"></i></div>
+    </section>
 
-    <div v-if="loading" class="text-center py-5">
-      <div class="spinner-border text-primary"></div>
+    <div v-if="loading" class="stat-grid mb-4">
+      <div v-for="n in 5" :key="n" class="stat"><span class="skel" style="height: 44px; width: 100%"></span></div>
     </div>
 
     <template v-else-if="ringkasan">
-      <!-- kartu statistik -->
-      <div class="row g-3 mb-4">
-        <div v-for="stat in stats" :key="stat.key" class="col-6 col-md">
-          <div class="card border-0 shadow-sm h-100">
-            <div class="card-body text-center">
-              <div class="fs-3">{{ stat.icon }}</div>
-              <div class="fs-4 fw-bold">{{ ringkasan[stat.key] }}</div>
-              <div class="text-secondary small">{{ stat.label }}</div>
-            </div>
-          </div>
-        </div>
+      <div class="stat-grid mb-4">
+        <StatCard
+          v-for="s in stats"
+          :key="s.key"
+          :label="s.label"
+          :value="ringkasan[s.key]"
+          :icon="s.icon"
+          :tone="s.tone"
+        />
       </div>
 
       <div class="row g-3">
-        <!-- kendaraan rusak berat: prioritas perbaikan -->
         <div class="col-lg-7">
-          <div class="card border-0 shadow-sm">
-            <div class="card-header bg-white fw-semibold">
-              ⚠️ Prioritas Perbaikan — Kendaraan Rusak Berat
+          <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <span class="fw-bold">Prioritas perbaikan</span>
+              <span class="badge-kondisi badge-kondisi-rusak_berat badge rounded-pill">Rusak berat</span>
             </div>
-            <div class="table-responsive">
-              <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
-                  <tr>
-                    <th>Nomor Polisi</th>
-                    <th>Merek / Tipe</th>
-                    <th>Perangkat Daerah</th>
-                    <th>Penanggung Jawab</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="k in rusakBerat" :key="k.id">
-                    <td>
-                      <router-link
-                        :to="{ name: 'kendaraan.show', params: { id: k.id } }"
-                        class="fw-semibold text-decoration-none"
-                      >
-                        {{ k.nomor_polisi }}
-                      </router-link>
-                    </td>
-                    <td>{{ k.merek }} {{ k.tipe }}</td>
-                    <td>{{ k.perangkat_daerah?.nama }}</td>
-                    <td>{{ k.penanggung_jawab?.nama ?? '—' }}</td>
-                  </tr>
-                  <tr v-if="rusakBerat.length === 0">
-                    <td colspan="4" class="text-center text-secondary py-4">
-                      Tidak ada kendaraan rusak berat 🎉
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+
+            <router-link
+              v-for="k in rusakBerat"
+              :key="k.id"
+              :to="{ name: 'kendaraan.show', params: { id: k.id } }"
+              class="list-row"
+            >
+              <div class="stat-icon tone-red"><i class="bi bi-car-front"></i></div>
+              <div class="flex-grow-1 min-w-0">
+                <div class="fw-semibold">{{ k.nomor_polisi }}</div>
+                <div class="small text-secondary text-truncate">
+                  {{ k.merek }} {{ k.tipe }} · {{ k.perangkat_daerah?.nama }}
+                </div>
+              </div>
+              <KondisiBadge :value="k.kondisi" short />
+            </router-link>
+
+            <div v-if="rusakBerat.length === 0" class="text-center py-5 px-3">
+              <i class="bi bi-patch-check fs-1 text-success opacity-50"></i>
+              <div class="fw-semibold mt-2">Semua kendaraan layak pakai</div>
+              <div class="small text-secondary">Tidak ada kendaraan dengan kondisi rusak berat.</div>
             </div>
           </div>
         </div>
 
-        <!-- akses cepat -->
         <div class="col-lg-5">
-          <div class="card border-0 shadow-sm h-100">
-            <div class="card-header bg-white fw-semibold">Akses Cepat</div>
-            <div class="card-body d-grid gap-2">
-              <router-link
-                :to="{ name: 'kendaraan.index' }"
-                class="btn btn-outline-primary text-start"
-              >
-                🚗 Kelola Data Kendaraan (KDO)
-              </router-link>
-              <router-link :to="{ name: 'pegawai.index' }" class="btn btn-outline-primary text-start">
-                👷 Kelola Data Pegawai (PNS)
-              </router-link>
-              <router-link
-                :to="{ name: 'perangkat-daerah.index' }"
-                class="btn btn-outline-primary text-start"
-              >
-                🏛️ Kelola Perangkat Daerah
-              </router-link>
-              <router-link :to="{ name: 'laporan.index' }" class="btn btn-outline-primary text-start">
-                📊 Laporan Kondisi Kendaraan
-              </router-link>
+          <div class="card h-100">
+            <div class="card-header fw-bold">Akses cepat</div>
+            <div class="card-body">
+              <div class="row g-2">
+                <div v-for="s in shortcuts" :key="s.to" class="col-6">
+                  <router-link :to="{ name: s.to }" class="tile h-100">
+                    <div class="stat-icon" :class="`tone-${s.tone}`"><i :class="['bi', s.icon]"></i></div>
+                    <div class="fw-semibold small lh-sm">{{ s.label }}<small>{{ s.desc }}</small></div>
+                  </router-link>
+                </div>
+              </div>
             </div>
           </div>
         </div>
