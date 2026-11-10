@@ -95,7 +95,7 @@ Setiap penambahan fitur baru wajib diikuti pembaruan:
 
 - [x] Fase 0 — prasyarat & repo
 - [x] Fase 1 — fondasi repo: scaffold backend + frontend, docs awal, commit pertama
-- [ ] Fase 2 — database: migration, model, seeder, dump awal
+- [x] Fase 2 — database: migration, model, seeder, dump awal (6 PD, 12 PNS, 15 KDO, 2 user)
 - [ ] Fase 3 — auth & keamanan dasar
 - [ ] Fase 4 — REST API CRUD (inti)
 - [ ] Fase 5 — dokumentasi API (Scribe + Postman)
