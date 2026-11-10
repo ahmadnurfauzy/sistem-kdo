@@ -5,6 +5,8 @@ import kendaraanApi from '../api/kendaraan'
 import pegawaiApi from '../api/pegawai'
 import { useAuthStore } from '../stores/auth'
 import ConfirmModal from '../components/ConfirmModal.vue'
+import KondisiBadge from '../components/KondisiBadge.vue'
+import PageHeader from '../components/PageHeader.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -42,6 +44,12 @@ const pilihanPJ = computed(() =>
   ),
 )
 
+const spesifikasi = computed(() =>
+  kendaraan.value
+    ? `${kendaraan.value.merek} ${kendaraan.value.tipe} · ${kendaraan.value.tahun_produksi} · ${kendaraan.value.warna}`
+    : 'Memuat data…',
+)
+
 async function simpanPJ() {
   savingPJ.value = true
   notifikasi.value = ''
@@ -72,66 +80,96 @@ async function confirmDelete() {
 <template>
   <div class="row justify-content-center">
     <div class="col-lg-9">
-      <div class="d-flex align-items-center mb-3">
-        <router-link class="btn btn-outline-secondary btn-sm me-3" :to="{ name: 'kendaraan.index' }">
-          ← Kembali
+      <PageHeader
+        eyebrow="Detail kendaraan"
+        :title="kendaraan?.nomor_polisi ?? 'Detail kendaraan'"
+        :subtitle="spesifikasi"
+      >
+        <KondisiBadge v-if="kendaraan" :value="kendaraan.kondisi" class="mb-2" />
+        <router-link class="btn btn-soft mb-2" :to="{ name: 'kendaraan.index' }">
+          <i class="bi bi-arrow-left me-1"></i>Kembali
         </router-link>
-        <h4 class="mb-0">Detail Kendaraan</h4>
-      </div>
+        <template v-if="auth.isAdmin && kendaraan">
+          <router-link
+            class="btn btn-primary mb-2"
+            :to="{ name: 'kendaraan.edit', params: { id: kendaraan.id } }"
+          >
+            <i class="bi bi-pencil me-1"></i>Ubah
+          </router-link>
+          <button class="btn btn-danger mb-2" @click="showConfirm = true">
+            <i class="bi bi-trash3 me-1"></i>Hapus
+          </button>
+        </template>
+      </PageHeader>
 
-      <div v-if="loading" class="text-center py-5">
-        <div class="spinner-border text-primary"></div>
+      <div v-if="loading" class="card">
+        <div class="card-body">
+          <span class="skel mb-3" style="width: 35%"></span>
+          <span class="skel mb-2"></span>
+          <span class="skel mb-2" style="width: 80%"></span>
+          <span class="skel" style="width: 50%"></span>
+        </div>
       </div>
 
       <template v-else-if="kendaraan">
-        <!-- identitas kendaraan -->
-        <div class="card border-0 shadow-sm mb-3">
+        <!-- data kendaraan -->
+        <div class="card mb-3">
+          <div class="card-header fw-bold"><i class="bi bi-card-list me-2"></i>Data kendaraan</div>
           <div class="card-body">
-            <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
-              <div>
-                <h5 class="mb-1 fw-bold">{{ kendaraan.nomor_polisi }}</h5>
-                <div class="text-secondary">
-                  {{ kendaraan.merek }} {{ kendaraan.tipe }} · {{ kendaraan.tahun_produksi }} ·
-                  {{ kendaraan.warna }}
-                </div>
+            <div class="row g-3">
+              <div class="col-6 col-md-3">
+                <div class="detail-label">Nomor polisi</div>
+                <div class="detail-value">{{ kendaraan.nomor_polisi }}</div>
               </div>
-              <span class="badge rounded-pill badge-kondisi fs-6" :class="`badge-kondisi-${kendaraan.kondisi}`">
-                {{ kendaraan.kondisi_label }}
-              </span>
+              <div class="col-6 col-md-3">
+                <div class="detail-label">Merek</div>
+                <div class="detail-value">{{ kendaraan.merek }}</div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="detail-label">Tipe / model</div>
+                <div class="detail-value">{{ kendaraan.tipe }}</div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="detail-label">Tahun produksi</div>
+                <div class="detail-value">{{ kendaraan.tahun_produksi }}</div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="detail-label">Warna</div>
+                <div class="detail-value">{{ kendaraan.warna }}</div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="detail-label">Kondisi</div>
+                <div class="detail-value"><KondisiBadge :value="kendaraan.kondisi" /></div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="detail-label">Perangkat daerah</div>
+                <div class="detail-value">{{ kendaraan.perangkat_daerah?.nama }}</div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="detail-label">Terdaftar pada</div>
+                <div class="detail-value">{{ kendaraan.dibuat_pada }}</div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="detail-label">Terakhir diubah</div>
+                <div class="detail-value">{{ kendaraan.diubah_pada }}</div>
+              </div>
             </div>
-
-            <dl class="row mb-0">
-              <dt class="col-sm-4">Perangkat Daerah</dt>
-              <dd class="col-sm-8">{{ kendaraan.perangkat_daerah?.nama }}</dd>
-              <dt class="col-sm-4">Terdaftar pada</dt>
-              <dd class="col-sm-8">{{ kendaraan.dibuat_pada }}</dd>
-              <dt class="col-sm-4">Terakhir diubah</dt>
-              <dd class="col-sm-8">{{ kendaraan.diubah_pada }}</dd>
-            </dl>
-          </div>
-
-          <div v-if="auth.isAdmin" class="card-footer bg-white d-flex justify-content-end gap-2">
-            <router-link
-              class="btn btn-outline-primary"
-              :to="{ name: 'kendaraan.edit', params: { id: kendaraan.id } }"
-            >
-              Ubah Data
-            </router-link>
-            <button class="btn btn-outline-danger" @click="showConfirm = true">Hapus</button>
           </div>
         </div>
 
         <!-- penanggung jawab -->
-        <div class="card border-0 shadow-sm">
-          <div class="card-header bg-white fw-semibold">👷 Penanggung Jawab Penggunaan</div>
+        <div class="card">
+          <div class="card-header fw-bold"><i class="bi bi-person-check me-2"></i>Penanggung jawab penggunaan</div>
           <div class="card-body">
-            <div v-if="notifikasi" class="alert alert-info py-2 small">{{ notifikasi }}</div>
+            <div v-if="notifikasi" class="alert alert-info py-2 small d-flex gap-2 align-items-start" role="status">
+              <i class="bi bi-info-circle mt-1"></i><span>{{ notifikasi }}</span>
+            </div>
 
             <template v-if="auth.isAdmin">
               <div class="row g-2 align-items-end">
                 <div class="col-md-8">
-                  <label class="form-label">Pegawai (PNS) penanggung jawab</label>
-                  <select v-model="pilihPJ" class="form-select">
+                  <label class="form-label" for="pilih-pj">Pegawai (PNS) penanggung jawab</label>
+                  <select id="pilih-pj" v-model="pilihPJ" class="form-select">
                     <option :value="null">— belum ditunjuk —</option>
                     <option v-for="p in pilihanPJ" :key="p.id" :value="p.id">
                       {{ p.nama }} · {{ p.jabatan }} ({{ p.golongan }})
@@ -143,19 +181,22 @@ async function confirmDelete() {
                 </div>
                 <div class="col-md-4">
                   <button class="btn btn-primary w-100" :disabled="savingPJ" @click="simpanPJ">
-                    <span v-if="savingPJ" class="spinner-border spinner-border-sm me-2"></span>
-                    Simpan Penanggung Jawab
+                    <span v-if="savingPJ" class="spinner-border spinner-border-sm me-1"></span>
+                    Simpan penanggung jawab
                   </button>
                 </div>
               </div>
             </template>
 
-            <div v-if="kendaraan.penanggung_jawab" class="border rounded p-3 mt-3 bg-light">
-              <div class="fw-semibold">{{ kendaraan.penanggung_jawab.nama }}</div>
-              <div class="text-secondary small">
-                NIP {{ kendaraan.penanggung_jawab.nip }} ·
-                {{ kendaraan.penanggung_jawab.jabatan }} ·
-                Gol. {{ kendaraan.penanggung_jawab.golongan }}
+            <div v-if="kendaraan.penanggung_jawab" class="pj-box mt-3">
+              <div class="stat-icon tone-blue"><i class="bi bi-person"></i></div>
+              <div class="min-w-0">
+                <div class="fw-semibold">{{ kendaraan.penanggung_jawab.nama }}</div>
+                <div class="small text-secondary">
+                  NIP {{ kendaraan.penanggung_jawab.nip }} ·
+                  {{ kendaraan.penanggung_jawab.jabatan }} ·
+                  Gol. {{ kendaraan.penanggung_jawab.golongan }}
+                </div>
               </div>
             </div>
             <div v-else class="text-secondary fst-italic mt-3">
@@ -169,7 +210,7 @@ async function confirmDelete() {
 
   <ConfirmModal
     :visible="showConfirm"
-    title="Hapus Kendaraan"
+    title="Hapus kendaraan"
     :message="`Hapus kendaraan ${kendaraan?.nomor_polisi}? Tindakan ini tidak dapat dibatalkan.`"
     confirm-label="Ya, hapus"
     :busy="deleting"
@@ -177,3 +218,29 @@ async function confirmDelete() {
     @cancel="showConfirm = false"
   />
 </template>
+
+<style scoped>
+.detail-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--kdo-muted);
+  margin-bottom: 0.25rem;
+}
+.detail-value {
+  font-weight: 600;
+  color: var(--kdo-ink);
+  line-height: 1.4;
+}
+
+.pj-box {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.9rem 1rem;
+  background: var(--kdo-bg);
+  border: 1px solid var(--kdo-border);
+  border-radius: 14px;
+}
+</style>

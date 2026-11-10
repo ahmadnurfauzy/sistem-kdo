@@ -3,6 +3,7 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import pegawaiApi from '../api/pegawai'
 import perangkatDaerahApi from '../api/perangkatDaerah'
+import PageHeader from '../components/PageHeader.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -78,69 +79,93 @@ function fieldError(field) {
 <template>
   <div class="row justify-content-center">
     <div class="col-lg-7">
-      <div class="d-flex align-items-center mb-3">
-        <router-link class="btn btn-outline-secondary btn-sm me-3" :to="{ name: 'pegawai.index' }">
-          ← Kembali
+      <PageHeader
+        eyebrow="Data utama"
+        :title="isEdit ? 'Ubah pegawai' : 'Tambah pegawai'"
+        :subtitle="isEdit ? 'Perbarui data Pegawai Negeri Sipil' : 'Lengkapi data Pegawai Negeri Sipil'"
+      >
+        <router-link class="btn btn-soft" :to="{ name: 'pegawai.index' }">
+          <i class="bi bi-arrow-left me-1"></i>Kembali
         </router-link>
-        <h4 class="mb-0">{{ isEdit ? 'Ubah Pegawai' : 'Tambah Pegawai' }}</h4>
-      </div>
+      </PageHeader>
 
-      <div v-if="loading" class="text-center py-5">
-        <div class="spinner-border text-primary"></div>
-      </div>
-
-      <form v-else class="card border-0 shadow-sm" @submit.prevent="submit">
+      <div v-if="loading" class="card">
         <div class="card-body">
+          <span class="skel mb-3" style="width: 30%"></span>
+          <span class="skel mb-2"></span>
+          <span class="skel mb-2" style="width: 80%"></span>
+          <span class="skel" style="width: 60%"></span>
+        </div>
+      </div>
+
+      <form v-else class="card" @submit.prevent="submit">
+        <div class="card-body">
+          <div class="form-section-title">Identitas</div>
           <div class="row g-3">
             <div class="col-12">
-              <label class="form-label">Nama Lengkap <span class="text-danger">*</span></label>
+              <label class="form-label" for="nama">Nama lengkap <span class="text-danger">*</span></label>
               <input
+                id="nama"
                 v-model.trim="form.nama"
                 class="form-control"
                 :class="{ 'is-invalid': fieldError('nama') }"
-                placeholder="Budi Santoso"
+                placeholder="Masukkan nama lengkap"
               />
               <div class="invalid-feedback">{{ fieldError('nama') }}</div>
+              <div class="form-text">Contoh: Budi Santoso</div>
             </div>
 
             <div class="col-md-6">
-              <label class="form-label">NIP (18 digit) <span class="text-danger">*</span></label>
+              <label class="form-label" for="nip">NIP <span class="text-danger">*</span></label>
               <input
+                id="nip"
                 v-model.trim="form.nip"
                 class="form-control"
                 :class="{ 'is-invalid': fieldError('nip') }"
-                placeholder="197504121998031001"
+                placeholder="Masukkan NIP 18 digit"
                 maxlength="18"
+                inputmode="numeric"
               />
               <div class="invalid-feedback">{{ fieldError('nip') }}</div>
+              <div class="form-text">18 digit angka. Contoh: 197504121998031001</div>
             </div>
 
             <div class="col-md-6">
-              <label class="form-label">Golongan <span class="text-danger">*</span></label>
+              <label class="form-label" for="golongan">Golongan <span class="text-danger">*</span></label>
               <input
+                id="golongan"
                 v-model.trim="form.golongan"
                 class="form-control"
                 :class="{ 'is-invalid': fieldError('golongan') }"
-                placeholder="III/a"
+                placeholder="Masukkan golongan"
               />
               <div class="invalid-feedback">{{ fieldError('golongan') }}</div>
-              <div class="form-text">Format: I/a sampai IV/e (contoh: III/a)</div>
+              <div class="form-text">Contoh: III/a</div>
             </div>
+          </div>
 
+          <div class="form-section-title">Kepegawaian</div>
+          <div class="row g-3">
             <div class="col-12">
-              <label class="form-label">Jabatan <span class="text-danger">*</span></label>
+              <label class="form-label" for="jabatan">Jabatan <span class="text-danger">*</span></label>
               <input
+                id="jabatan"
                 v-model.trim="form.jabatan"
                 class="form-control"
                 :class="{ 'is-invalid': fieldError('jabatan') }"
-                placeholder="Kepala Sub Bagian Umum"
+                placeholder="Masukkan jabatan"
               />
               <div class="invalid-feedback">{{ fieldError('jabatan') }}</div>
+              <div class="form-text">Contoh: Kepala Sub Bagian Umum</div>
             </div>
+          </div>
 
+          <div class="form-section-title">Penempatan</div>
+          <div class="row g-3">
             <div class="col-12">
-              <label class="form-label">Perangkat Daerah <span class="text-danger">*</span></label>
+              <label class="form-label" for="pd-pegawai">Perangkat daerah <span class="text-danger">*</span></label>
               <select
+                id="pd-pegawai"
                 v-model="form.perangkat_daerah_id"
                 class="form-select"
                 :class="{ 'is-invalid': fieldError('perangkat_daerah_id') }"
@@ -154,16 +179,32 @@ function fieldError(field) {
               <div class="invalid-feedback">{{ fieldError('perangkat_daerah_id') }}</div>
             </div>
           </div>
-        </div>
 
-        <div class="card-footer bg-white d-flex justify-content-end gap-2">
-          <router-link class="btn btn-secondary" :to="{ name: 'pegawai.index' }">Batal</router-link>
-          <button type="submit" class="btn btn-primary" :disabled="saving">
-            <span v-if="saving" class="spinner-border spinner-border-sm me-2"></span>
-            Simpan
-          </button>
+          <div class="form-actions">
+            <router-link class="btn btn-soft" :to="{ name: 'pegawai.index' }">Batal</router-link>
+            <button type="submit" class="btn btn-primary" :disabled="saving">
+              <span v-if="saving" class="spinner-border spinner-border-sm me-1"></span>
+              Simpan
+            </button>
+          </div>
         </div>
       </form>
     </div>
   </div>
 </template>
+
+<style scoped>
+.form-section-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--kdo-muted);
+  margin: 1.5rem 0 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--kdo-border);
+}
+.form-section-title:first-child {
+  margin-top: 0;
+}
+</style>

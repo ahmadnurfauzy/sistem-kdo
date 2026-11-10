@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import kendaraanApi from '../api/kendaraan'
 import pegawaiApi from '../api/pegawai'
 import perangkatDaerahApi from '../api/perangkatDaerah'
+import PageHeader from '../components/PageHeader.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -107,34 +108,47 @@ function fieldError(field) {
 <template>
   <div class="row justify-content-center">
     <div class="col-lg-8">
-      <div class="d-flex align-items-center mb-3">
-        <router-link class="btn btn-outline-secondary btn-sm me-3" :to="{ name: 'kendaraan.index' }">
-          ← Kembali
+      <PageHeader
+        eyebrow="Data utama"
+        :title="isEdit ? 'Ubah kendaraan' : 'Tambah kendaraan'"
+        :subtitle="isEdit ? 'Perbarui data kendaraan dinas operasional' : 'Lengkapi data kendaraan dinas operasional'"
+      >
+        <router-link class="btn btn-soft" :to="{ name: 'kendaraan.index' }">
+          <i class="bi bi-arrow-left me-1"></i>Kembali
         </router-link>
-        <h4 class="mb-0">{{ isEdit ? 'Ubah Kendaraan' : 'Tambah Kendaraan' }}</h4>
-      </div>
+      </PageHeader>
 
-      <div v-if="loading" class="text-center py-5">
-        <div class="spinner-border text-primary"></div>
-      </div>
-
-      <form v-else class="card border-0 shadow-sm" @submit.prevent="submit">
+      <div v-if="loading" class="card">
         <div class="card-body">
+          <span class="skel mb-3" style="width: 30%"></span>
+          <span class="skel mb-2"></span>
+          <span class="skel mb-2" style="width: 80%"></span>
+          <span class="skel mb-2" style="width: 60%"></span>
+          <span class="skel" style="width: 40%"></span>
+        </div>
+      </div>
+
+      <form v-else class="card" @submit.prevent="submit">
+        <div class="card-body">
+          <div class="form-section-title">Identitas</div>
           <div class="row g-3">
             <div class="col-md-6">
-              <label class="form-label">Nomor Polisi <span class="text-danger">*</span></label>
+              <label class="form-label" for="nomor-polisi">Nomor polisi <span class="text-danger">*</span></label>
               <input
+                id="nomor-polisi"
                 v-model.trim="form.nomor_polisi"
                 class="form-control"
                 :class="{ 'is-invalid': fieldError('nomor_polisi') }"
-                placeholder="DK 1234 AB"
+                placeholder="Masukkan nomor polisi"
               />
               <div class="invalid-feedback">{{ fieldError('nomor_polisi') }}</div>
+              <div class="form-text">Contoh: DK 1234 AB</div>
             </div>
 
             <div class="col-md-6">
-              <label class="form-label">Perangkat Daerah (pemilik) <span class="text-danger">*</span></label>
+              <label class="form-label" for="pd-kendaraan">Perangkat daerah (pemilik) <span class="text-danger">*</span></label>
               <select
+                id="pd-kendaraan"
                 v-model="form.perangkat_daerah_id"
                 class="form-select"
                 :class="{ 'is-invalid': fieldError('perangkat_daerah_id') }"
@@ -147,70 +161,85 @@ function fieldError(field) {
               </select>
               <div class="invalid-feedback">{{ fieldError('perangkat_daerah_id') }}</div>
             </div>
+          </div>
 
+          <div class="form-section-title">Spesifikasi</div>
+          <div class="row g-3">
             <div class="col-md-6">
-              <label class="form-label">Merek <span class="text-danger">*</span></label>
+              <label class="form-label" for="merek">Merek <span class="text-danger">*</span></label>
               <input
+                id="merek"
                 v-model.trim="form.merek"
                 class="form-control"
                 :class="{ 'is-invalid': fieldError('merek') }"
-                placeholder="Toyota"
+                placeholder="Masukkan merek"
               />
               <div class="invalid-feedback">{{ fieldError('merek') }}</div>
+              <div class="form-text">Contoh: Toyota</div>
             </div>
 
             <div class="col-md-6">
-              <label class="form-label">Tipe / Model <span class="text-danger">*</span></label>
+              <label class="form-label" for="tipe">Tipe / model <span class="text-danger">*</span></label>
               <input
+                id="tipe"
                 v-model.trim="form.tipe"
                 class="form-control"
                 :class="{ 'is-invalid': fieldError('tipe') }"
-                placeholder="Avanza 1.5 G"
+                placeholder="Masukkan tipe atau model"
               />
               <div class="invalid-feedback">{{ fieldError('tipe') }}</div>
+              <div class="form-text">Contoh: Avanza 1.5 G</div>
             </div>
 
             <div class="col-md-4">
-              <label class="form-label">Tahun Produksi <span class="text-danger">*</span></label>
+              <label class="form-label" for="tahun-produksi">Tahun produksi <span class="text-danger">*</span></label>
               <input
+                id="tahun-produksi"
                 v-model.number="form.tahun_produksi"
                 type="number"
                 min="1980"
                 class="form-control"
                 :class="{ 'is-invalid': fieldError('tahun_produksi') }"
-                placeholder="2021"
+                placeholder="Masukkan tahun produksi"
               />
               <div class="invalid-feedback">{{ fieldError('tahun_produksi') }}</div>
+              <div class="form-text">Contoh: 2021</div>
             </div>
 
             <div class="col-md-4">
-              <label class="form-label">Warna <span class="text-danger">*</span></label>
+              <label class="form-label" for="warna">Warna <span class="text-danger">*</span></label>
               <input
+                id="warna"
                 v-model.trim="form.warna"
                 class="form-control"
                 :class="{ 'is-invalid': fieldError('warna') }"
-                placeholder="Putih"
+                placeholder="Masukkan warna"
               />
               <div class="invalid-feedback">{{ fieldError('warna') }}</div>
+              <div class="form-text">Contoh: Putih</div>
             </div>
 
             <div class="col-md-4">
-              <label class="form-label">Kondisi <span class="text-danger">*</span></label>
+              <label class="form-label" for="kondisi">Kondisi <span class="text-danger">*</span></label>
               <select
+                id="kondisi"
                 v-model="form.kondisi"
                 class="form-select"
                 :class="{ 'is-invalid': fieldError('kondisi') }"
               >
                 <option value="baik">Baik</option>
-                <option value="rusak_ringan">Rusak Ringan</option>
-                <option value="rusak_berat">Rusak Berat</option>
+                <option value="rusak_ringan">Rusak ringan</option>
+                <option value="rusak_berat">Rusak berat</option>
               </select>
               <div class="invalid-feedback">{{ fieldError('kondisi') }}</div>
             </div>
+          </div>
 
+          <div class="form-section-title">Penugasan</div>
+          <div class="row g-3">
             <div class="col-12">
-              <label class="form-label">Penanggung Jawab (opsional)</label>
-              <select v-model="form.pegawai_id" class="form-select">
+              <label class="form-label" for="pegawai-pj">Penanggung jawab (opsional)</label>
+              <select id="pegawai-pj" v-model="form.pegawai_id" class="form-select">
                 <option :value="null">— belum ditunjuk —</option>
                 <option v-for="p in pilihanPJ" :key="p.id" :value="p.id">
                   {{ p.nama }} · {{ p.jabatan }} ({{ p.golongan }})
@@ -222,16 +251,32 @@ function fieldError(field) {
               <div class="invalid-feedback">{{ fieldError('pegawai_id') }}</div>
             </div>
           </div>
-        </div>
 
-        <div class="card-footer bg-white d-flex justify-content-end gap-2">
-          <router-link class="btn btn-secondary" :to="{ name: 'kendaraan.index' }">Batal</router-link>
-          <button type="submit" class="btn btn-primary" :disabled="saving">
-            <span v-if="saving" class="spinner-border spinner-border-sm me-2"></span>
-            Simpan
-          </button>
+          <div class="form-actions">
+            <router-link class="btn btn-soft" :to="{ name: 'kendaraan.index' }">Batal</router-link>
+            <button type="submit" class="btn btn-primary" :disabled="saving">
+              <span v-if="saving" class="spinner-border spinner-border-sm me-1"></span>
+              Simpan
+            </button>
+          </div>
         </div>
       </form>
     </div>
   </div>
 </template>
+
+<style scoped>
+.form-section-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--kdo-muted);
+  margin: 1.5rem 0 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--kdo-border);
+}
+.form-section-title:first-child {
+  margin-top: 0;
+}
+</style>
