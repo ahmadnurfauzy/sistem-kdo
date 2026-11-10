@@ -100,7 +100,7 @@ Setiap penambahan fitur baru wajib diikuti pembaruan:
 - [x] Fase 4 — REST API CRUD (inti): PD, PNS, KDO + assign PJ + laporan, teruji menyeluruh
 - [x] Fase 5 — dokumentasi API (Scribe HTML + Postman collection + OpenAPI)
 - [x] Fase 6 — frontend Vue 3: login, dashboard, CRUD 3 entitas, assign PJ, laporan
-- [ ] Fase 7 — finalisasi & pengumpulan
+- [x] Fase 7 — finalisasi & pengumpulan (dump final, README final, push)
 - [ ] Fase 8 — bonus (riwayat kondisi/PJ, kolom tambahan, export, foto)
 
 ## 9. Deklarasi Penggunaan AI

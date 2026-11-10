@@ -78,6 +78,23 @@ npm install
 npm run dev                 # http://localhost:5173
 ```
 
+## Ringkasan Endpoint API
+
+Base URL: `http://localhost:8000/api/v1` — autentikasi bearer token Sanctum. Read (GET) untuk semua pengguna login; mutasi hanya role admin.
+
+| Method | Endpoint | Fungsi |
+|---|---|---|
+| POST | `/auth/login`, `/auth/logout` | login (dapat token) / logout |
+| GET | `/auth/me` | profil pengguna aktif |
+| GET | `/perangkat-daerah` | daftar PD (`?search=&per_page=`) |
+| POST/PUT/DELETE | `/perangkat-daerah/{id}` | tambah / ubah / hapus PD *(admin)* |
+| GET | `/pegawai` | daftar PNS (`?search=&perangkat_daerah_id=`) |
+| POST/PUT/DELETE | `/pegawai/{id}` | tambah / ubah / hapus PNS *(admin)* |
+| GET | `/kendaraan` | daftar KDO (`?search=&kondisi=&perangkat_daerah_id=`) |
+| POST/PUT/DELETE | `/kendaraan/{id}` | tambah / ubah / hapus KDO *(admin)* |
+| PUT | `/kendaraan/{id}/penanggung-jawab` | tetapkan / ganti / lepas penanggung jawab *(admin)* |
+| GET | `/laporan/kondisi` | rekap kondisi kendaraan per PD |
+
 ## Dokumentasi API
 
 - **Dokumen interaktif (HTML)**: buka [`docs/api/index.html`](docs/api/index.html) langsung di browser — berisi seluruh endpoint, parameter, contoh request/response, dan tombol *Try It Out*
