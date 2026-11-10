@@ -10,11 +10,317 @@
     ],
     "info": {
         "name": "Sistem KDO API Documentation",
-        "_postman_id": "5638f774-278f-442a-9a37-77bf4a294ef1",
+        "_postman_id": "21ba9f0f-43cf-46d9-b799-d778a411bb5e",
         "description": "REST API Sistem Pengelolaan Kendaraan Dinas Operasional (KDO) Perangkat Daerah \u2014 JP-1 (20270311).",
         "schema": "https:\/\/schema.getpostman.com\/json\/collection\/v2.1.0\/collection.json"
     },
     "item": [
+        {
+            "name": "Akun (Kelola Pengguna)",
+            "description": "",
+            "item": [
+                {
+                    "name": "Daftar akun pengguna",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/akun",
+                            "query": [
+                                {
+                                    "key": "search",
+                                    "value": "pengelola",
+                                    "description": "Opsional, cari berdasarkan nama atau email.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "role",
+                                    "value": "pengelola",
+                                    "description": "Opsional, filter role: admin, pengelola, pengguna.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "per_page",
+                                    "value": "15",
+                                    "description": "Opsional, jumlah item per halaman (maks 100).",
+                                    "disabled": false
+                                }
+                            ],
+                            "raw": "{{baseUrl}}\/api\/v1\/akun?search=pengelola&role=pengelola&per_page=15"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Daftar akun sistem dengan pencarian (nama\/email), filter role, dan paginasi. Hanya admin."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"data\":[{\"id\":1,\"name\":\"Administrator KDO\",\"email\":\"admin@kdo.test\",\"role\":\"admin\",\"dibuat_pada\":\"2026-11-10 06:00:00\",\"diubah_pada\":\"2026-11-10 06:00:00\"}],\"meta\":{\"current_page\":1,\"from\":1,\"last_page\":1,\"per_page\":15,\"to\":3,\"total\":3}}",
+                            "name": "sukses"
+                        }
+                    ]
+                },
+                {
+                    "name": "Tambah akun pengguna",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/akun",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/akun"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"name\":\"Budi Pengelola\",\"email\":\"budi@kdo.test\",\"password\":\"password123\",\"role\":\"pengelola\"}"
+                        },
+                        "description": "Membuat akun baru dengan role admin, pengelola, atau pengguna. Hanya admin."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 201,
+                            "body": "{\"data\":{\"id\":4,\"name\":\"Budi Pengelola\",\"email\":\"budi@kdo.test\",\"role\":\"pengelola\",\"dibuat_pada\":\"2026-11-10 06:10:00\",\"diubah_pada\":\"2026-11-10 06:10:00\"}}",
+                            "name": "sukses"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"message\":\"Akses ditolak. Hanya admin yang boleh mengelola akun.\"}",
+                            "name": "bukan admin"
+                        },
+                        {
+                            "header": [],
+                            "code": 422,
+                            "body": "{\"message\":\"Email sudah terdaftar.\",\"errors\":{\"email\":[\"Email sudah terdaftar.\"]}}",
+                            "name": "email duplikat"
+                        }
+                    ]
+                },
+                {
+                    "name": "Detail akun pengguna",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/akun\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/akun\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": 1,
+                                    "description": "ID akun."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Mengambil satu data akun berdasarkan ID. Hanya admin."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"data\":{\"id\":1,\"name\":\"Administrator KDO\",\"email\":\"admin@kdo.test\",\"role\":\"admin\",\"dibuat_pada\":\"2026-11-10 06:00:00\",\"diubah_pada\":\"2026-11-10 06:00:00\"}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 404,
+                            "body": "{\"message\":\"Data tidak ditemukan.\"}",
+                            "name": "tidak ditemukan"
+                        }
+                    ]
+                },
+                {
+                    "name": "Ubah akun pengguna",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/akun\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/akun\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": 2,
+                                    "description": "ID akun."
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"name\":\"Pengelola KDO\",\"email\":\"pengelola@kdo.test\",\"password\":\"passwordBaru\",\"role\":\"pengelola\"}"
+                        },
+                        "description": "Memperbarui nama, email, role, dan\/atau kata sandi akun. Kata sandi\nopsional \u2014 kosongkan bila tidak ingin mengubah. Role admin terakhir\ntidak dapat diturunkan (409). Hanya admin."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"data\":{\"id\":2,\"name\":\"Pengelola KDO\",\"email\":\"pengelola@kdo.test\",\"role\":\"pengelola\",\"dibuat_pada\":\"2026-11-10 06:00:00\",\"diubah_pada\":\"2026-11-10 06:15:00\"}}",
+                            "name": "sukses"
+                        },
+                        {
+                            "header": [],
+                            "code": 409,
+                            "body": "{\"message\":\"Tidak dapat menurunkan role admin terakhir. Tambahkan admin lain terlebih dahulu.\"}",
+                            "name": "admin terakhir diturunkan"
+                        }
+                    ]
+                },
+                {
+                    "name": "Ubah akun pengguna",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/akun\/:akun_id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/akun\/:akun_id",
+                            "variable": [
+                                {
+                                    "id": "akun_id",
+                                    "key": "akun_id",
+                                    "value": 1,
+                                    "description": "The ID of the akun."
+                                },
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": 2,
+                                    "description": "ID akun."
+                                }
+                            ]
+                        },
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"name\":\"Pengelola KDO\",\"email\":\"pengelola@kdo.test\",\"password\":\"passwordBaru\",\"role\":\"pengelola\"}"
+                        },
+                        "description": "Memperbarui nama, email, role, dan\/atau kata sandi akun. Kata sandi\nopsional \u2014 kosongkan bila tidak ingin mengubah. Role admin terakhir\ntidak dapat diturunkan (409). Hanya admin."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"data\":{\"id\":2,\"name\":\"Pengelola KDO\",\"email\":\"pengelola@kdo.test\",\"role\":\"pengelola\",\"dibuat_pada\":\"2026-11-10 06:00:00\",\"diubah_pada\":\"2026-11-10 06:15:00\"}}",
+                            "name": "sukses"
+                        },
+                        {
+                            "header": [],
+                            "code": 409,
+                            "body": "{\"message\":\"Tidak dapat menurunkan role admin terakhir. Tambahkan admin lain terlebih dahulu.\"}",
+                            "name": "admin terakhir diturunkan"
+                        }
+                    ]
+                },
+                {
+                    "name": "Hapus akun pengguna",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/akun\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/akun\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": 4,
+                                    "description": "ID akun."
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Menghapus akun beserta token aktifnya. Tidak dapat menghapus akun\nyang sedang dipakai (409) atau admin terakhir (409). Hanya admin."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 204,
+                            "body": "",
+                            "name": "sukses"
+                        },
+                        {
+                            "header": [],
+                            "code": 409,
+                            "body": "{\"message\":\"Tidak dapat menghapus akun yang sedang Anda gunakan.\"}",
+                            "name": "akun sendiri"
+                        },
+                        {
+                            "header": [],
+                            "code": 409,
+                            "body": "{\"message\":\"Tidak dapat menghapus admin terakhir.\"}",
+                            "name": "admin terakhir"
+                        }
+                    ]
+                }
+            ]
+        },
         {
             "name": "Autentikasi",
             "description": "",
@@ -193,20 +499,12 @@
                                     "value": "application\/json"
                                 },
                                 {
-                                    "key": "x-ratelimit-limit",
-                                    "value": "60"
-                                },
-                                {
-                                    "key": "x-ratelimit-remaining",
-                                    "value": "59"
-                                },
-                                {
                                     "key": "vary",
                                     "value": "Origin"
                                 }
                             ],
-                            "code": 200,
-                            "body": "{\"data\":[],\"links\":{\"first\":\"http:\\\/\\\/localhost:8000\\\/api\\\/v1\\\/kendaraan?page=1\",\"last\":\"http:\\\/\\\/localhost:8000\\\/api\\\/v1\\\/kendaraan?page=1\",\"prev\":null,\"next\":null},\"meta\":{\"current_page\":1,\"from\":null,\"last_page\":1,\"links\":[{\"url\":null,\"label\":\"&laquo; Previous\",\"page\":null,\"active\":false},{\"url\":\"http:\\\/\\\/localhost:8000\\\/api\\\/v1\\\/kendaraan?page=1\",\"label\":\"1\",\"page\":1,\"active\":true},{\"url\":null,\"label\":\"Next &raquo;\",\"page\":null,\"active\":false}],\"path\":\"http:\\\/\\\/localhost:8000\\\/api\\\/v1\\\/kendaraan\",\"per_page\":15,\"to\":null,\"total\":0}}",
+                            "code": 401,
+                            "body": "{\"message\":\"Tidak terautentikasi. Sertakan token yang valid.\"}",
                             "name": ""
                         }
                     ]
@@ -254,20 +552,12 @@
                                     "value": "application\/json"
                                 },
                                 {
-                                    "key": "x-ratelimit-limit",
-                                    "value": "60"
-                                },
-                                {
-                                    "key": "x-ratelimit-remaining",
-                                    "value": "59"
-                                },
-                                {
                                     "key": "vary",
                                     "value": "Origin"
                                 }
                             ],
-                            "code": 200,
-                            "body": "{\"data\":{\"id\":1,\"nomor_polisi\":\"DK 1234 AB\",\"merek\":\"Toyota\",\"tipe\":\"Avanza 1.5 G\",\"tahun_produksi\":2021,\"warna\":\"Putih\",\"kondisi\":\"baik\",\"kondisi_label\":\"Baik\",\"perangkat_daerah\":{\"id\":1,\"kode\":\"SETDA\",\"nama\":\"Sekretariat Daerah\"},\"penanggung_jawab\":{\"id\":1,\"nama\":\"Budi Santoso\",\"nip\":\"197504121998031001\",\"jabatan\":\"Kepala Bagian Umum\",\"golongan\":\"IV\\\/b\"},\"dibuat_pada\":\"2026-11-10 05:25:13\",\"diubah_pada\":\"2026-11-10 05:25:13\"}}",
+                            "code": 401,
+                            "body": "{\"message\":\"Tidak terautentikasi. Sertakan token yang valid.\"}",
                             "name": ""
                         }
                     ]
@@ -349,7 +639,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"nomor_polisi\":\"b\",\"merek\":\"n\",\"tipe\":\"g\",\"tahun_produksi\":1981,\"warna\":\"m\",\"kondisi\":\"rusak_ringan\",\"perangkat_daerah_id\":16,\"pegawai_id\":16}"
+                            "raw": "{\"nomor_polisi\":\"b\",\"merek\":\"n\",\"tipe\":\"g\",\"tahun_produksi\":1981,\"warna\":\"m\",\"kondisi\":\"baik\",\"perangkat_daerah_id\":16,\"pegawai_id\":16}"
                         },
                         "description": "Memperbarui data kendaraan. Hanya admin."
                     },
@@ -391,7 +681,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"nomor_polisi\":\"b\",\"merek\":\"n\",\"tipe\":\"g\",\"tahun_produksi\":1981,\"warna\":\"m\",\"kondisi\":\"baik\",\"perangkat_daerah_id\":16,\"pegawai_id\":16}"
+                            "raw": "{\"nomor_polisi\":\"b\",\"merek\":\"n\",\"tipe\":\"g\",\"tahun_produksi\":1981,\"warna\":\"m\",\"kondisi\":\"rusak_ringan\",\"perangkat_daerah_id\":16,\"pegawai_id\":16}"
                         },
                         "description": "Memperbarui data kendaraan. Hanya admin."
                     },
@@ -596,20 +886,12 @@
                                     "value": "application\/json"
                                 },
                                 {
-                                    "key": "x-ratelimit-limit",
-                                    "value": "60"
-                                },
-                                {
-                                    "key": "x-ratelimit-remaining",
-                                    "value": "59"
-                                },
-                                {
                                     "key": "vary",
                                     "value": "Origin"
                                 }
                             ],
-                            "code": 200,
-                            "body": "{\"data\":[{\"id\":1,\"nama\":\"Budi Santoso\",\"nip\":\"197504121998031001\",\"jabatan\":\"Kepala Bagian Umum\",\"golongan\":\"IV\\\/b\",\"perangkat_daerah\":{\"id\":1,\"kode\":\"SETDA\",\"nama\":\"Sekretariat Daerah\"},\"jumlah_kendaraan_ditangani\":1,\"dibuat_pada\":\"2026-11-10 05:25:13\",\"diubah_pada\":\"2026-11-10 05:25:13\"}],\"links\":{\"first\":\"http:\\\/\\\/localhost:8000\\\/api\\\/v1\\\/pegawai?page=1\",\"last\":\"http:\\\/\\\/localhost:8000\\\/api\\\/v1\\\/pegawai?page=1\",\"prev\":null,\"next\":null},\"meta\":{\"current_page\":1,\"from\":1,\"last_page\":1,\"links\":[{\"url\":null,\"label\":\"&laquo; Previous\",\"page\":null,\"active\":false},{\"url\":\"http:\\\/\\\/localhost:8000\\\/api\\\/v1\\\/pegawai?page=1\",\"label\":\"1\",\"page\":1,\"active\":true},{\"url\":null,\"label\":\"Next &raquo;\",\"page\":null,\"active\":false}],\"path\":\"http:\\\/\\\/localhost:8000\\\/api\\\/v1\\\/pegawai\",\"per_page\":15,\"to\":1,\"total\":1}}",
+                            "code": 401,
+                            "body": "{\"message\":\"Tidak terautentikasi. Sertakan token yang valid.\"}",
                             "name": ""
                         }
                     ]
@@ -657,20 +939,12 @@
                                     "value": "application\/json"
                                 },
                                 {
-                                    "key": "x-ratelimit-limit",
-                                    "value": "60"
-                                },
-                                {
-                                    "key": "x-ratelimit-remaining",
-                                    "value": "59"
-                                },
-                                {
                                     "key": "vary",
                                     "value": "Origin"
                                 }
                             ],
-                            "code": 200,
-                            "body": "{\"data\":{\"id\":1,\"nama\":\"Budi Santoso\",\"nip\":\"197504121998031001\",\"jabatan\":\"Kepala Bagian Umum\",\"golongan\":\"IV\\\/b\",\"perangkat_daerah\":{\"id\":1,\"kode\":\"SETDA\",\"nama\":\"Sekretariat Daerah\"},\"jumlah_kendaraan_ditangani\":1,\"dibuat_pada\":\"2026-11-10 05:25:13\",\"diubah_pada\":\"2026-11-10 05:25:13\"}}",
+                            "code": 401,
+                            "body": "{\"message\":\"Tidak terautentikasi. Sertakan token yang valid.\"}",
                             "name": ""
                         }
                     ]
@@ -900,20 +1174,12 @@
                                     "value": "application\/json"
                                 },
                                 {
-                                    "key": "x-ratelimit-limit",
-                                    "value": "60"
-                                },
-                                {
-                                    "key": "x-ratelimit-remaining",
-                                    "value": "59"
-                                },
-                                {
                                     "key": "vary",
                                     "value": "Origin"
                                 }
                             ],
-                            "code": 200,
-                            "body": "{\"data\":[{\"id\":3,\"kode\":\"DINKES\",\"nama\":\"Dinas Kesehatan\",\"jumlah_pegawai\":2,\"jumlah_kendaraan\":3,\"dibuat_pada\":\"2026-11-10 05:25:13\",\"diubah_pada\":\"2026-11-10 05:25:13\"},{\"id\":2,\"kode\":\"DISDIK\",\"nama\":\"Dinas Pendidikan\",\"jumlah_pegawai\":3,\"jumlah_kendaraan\":3,\"dibuat_pada\":\"2026-11-10 05:25:13\",\"diubah_pada\":\"2026-11-10 05:25:13\"},{\"id\":4,\"kode\":\"DISHUB\",\"nama\":\"Dinas Perhubungan\",\"jumlah_pegawai\":2,\"jumlah_kendaraan\":3,\"dibuat_pada\":\"2026-11-10 05:25:13\",\"diubah_pada\":\"2026-11-10 05:25:13\"},{\"id\":5,\"kode\":\"DPUPR\",\"nama\":\"Dinas Pekerjaan Umum dan Penataan Ruang\",\"jumlah_pegawai\":2,\"jumlah_kendaraan\":2,\"dibuat_pada\":\"2026-11-10 05:25:13\",\"diubah_pada\":\"2026-11-10 05:25:13\"}],\"links\":{\"first\":\"http:\\\/\\\/localhost:8000\\\/api\\\/v1\\\/perangkat-daerah?page=1\",\"last\":\"http:\\\/\\\/localhost:8000\\\/api\\\/v1\\\/perangkat-daerah?page=1\",\"prev\":null,\"next\":null},\"meta\":{\"current_page\":1,\"from\":1,\"last_page\":1,\"links\":[{\"url\":null,\"label\":\"&laquo; Previous\",\"page\":null,\"active\":false},{\"url\":\"http:\\\/\\\/localhost:8000\\\/api\\\/v1\\\/perangkat-daerah?page=1\",\"label\":\"1\",\"page\":1,\"active\":true},{\"url\":null,\"label\":\"Next &raquo;\",\"page\":null,\"active\":false}],\"path\":\"http:\\\/\\\/localhost:8000\\\/api\\\/v1\\\/perangkat-daerah\",\"per_page\":15,\"to\":4,\"total\":4}}",
+                            "code": 401,
+                            "body": "{\"message\":\"Tidak terautentikasi. Sertakan token yang valid.\"}",
                             "name": ""
                         }
                     ]
@@ -961,20 +1227,12 @@
                                     "value": "application\/json"
                                 },
                                 {
-                                    "key": "x-ratelimit-limit",
-                                    "value": "60"
-                                },
-                                {
-                                    "key": "x-ratelimit-remaining",
-                                    "value": "59"
-                                },
-                                {
                                     "key": "vary",
                                     "value": "Origin"
                                 }
                             ],
-                            "code": 200,
-                            "body": "{\"data\":{\"id\":1,\"kode\":\"SETDA\",\"nama\":\"Sekretariat Daerah\",\"jumlah_pegawai\":2,\"jumlah_kendaraan\":2,\"dibuat_pada\":\"2026-11-10 05:25:12\",\"diubah_pada\":\"2026-11-10 05:25:12\"}}",
+                            "code": 401,
+                            "body": "{\"message\":\"Tidak terautentikasi. Sertakan token yang valid.\"}",
                             "name": ""
                         },
                         {

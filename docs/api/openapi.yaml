@@ -8,6 +8,9 @@ servers:
     url: 'http://localhost:8000'
 tags:
   -
+    name: 'Akun (Kelola Pengguna)'
+    description: ''
+  -
     name: Autentikasi
     description: ''
   -
@@ -32,6 +35,519 @@ security:
   -
     default: []
 paths:
+  /api/v1/akun:
+    get:
+      summary: 'Daftar akun pengguna'
+      operationId: daftarAkunPengguna
+      description: 'Daftar akun sistem dengan pencarian (nama/email), filter role, dan paginasi. Hanya admin.'
+      parameters:
+        -
+          in: query
+          name: search
+          description: 'Opsional, cari berdasarkan nama atau email.'
+          example: pengelola
+          required: false
+          schema:
+            type: string
+            description: 'Opsional, cari berdasarkan nama atau email.'
+            example: pengelola
+        -
+          in: query
+          name: role
+          description: 'Opsional, filter role: admin, pengelola, pengguna.'
+          example: pengelola
+          required: false
+          schema:
+            type: string
+            description: 'Opsional, filter role: admin, pengelola, pengguna.'
+            example: pengelola
+        -
+          in: query
+          name: per_page
+          description: 'Opsional, jumlah item per halaman (maks 100).'
+          example: 15
+          required: false
+          schema:
+            type: integer
+            description: 'Opsional, jumlah item per halaman (maks 100).'
+            example: 15
+      responses:
+        200:
+          description: sukses
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    -
+                      id: 1
+                      name: 'Administrator KDO'
+                      email: admin@kdo.test
+                      role: admin
+                      dibuat_pada: '2026-11-10 06:00:00'
+                      diubah_pada: '2026-11-10 06:00:00'
+                  meta:
+                    current_page: 1
+                    from: 1
+                    last_page: 1
+                    per_page: 15
+                    to: 3
+                    total: 3
+                properties:
+                  data:
+                    type: array
+                    example:
+                      -
+                        id: 1
+                        name: 'Administrator KDO'
+                        email: admin@kdo.test
+                        role: admin
+                        dibuat_pada: '2026-11-10 06:00:00'
+                        diubah_pada: '2026-11-10 06:00:00'
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        name:
+                          type: string
+                          example: 'Administrator KDO'
+                        email:
+                          type: string
+                          example: admin@kdo.test
+                        role:
+                          type: string
+                          example: admin
+                        dibuat_pada:
+                          type: string
+                          example: '2026-11-10 06:00:00'
+                        diubah_pada:
+                          type: string
+                          example: '2026-11-10 06:00:00'
+                  meta:
+                    type: object
+                    properties:
+                      current_page:
+                        type: integer
+                        example: 1
+                      from:
+                        type: integer
+                        example: 1
+                      last_page:
+                        type: integer
+                        example: 1
+                      per_page:
+                        type: integer
+                        example: 15
+                      to:
+                        type: integer
+                        example: 3
+                      total:
+                        type: integer
+                        example: 3
+      tags:
+        - 'Akun (Kelola Pengguna)'
+    post:
+      summary: 'Tambah akun pengguna'
+      operationId: tambahAkunPengguna
+      description: 'Membuat akun baru dengan role admin, pengelola, atau pengguna. Hanya admin.'
+      parameters: []
+      responses:
+        201:
+          description: sukses
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    id: 4
+                    name: 'Budi Pengelola'
+                    email: budi@kdo.test
+                    role: pengelola
+                    dibuat_pada: '2026-11-10 06:10:00'
+                    diubah_pada: '2026-11-10 06:10:00'
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 4
+                      name:
+                        type: string
+                        example: 'Budi Pengelola'
+                      email:
+                        type: string
+                        example: budi@kdo.test
+                      role:
+                        type: string
+                        example: pengelola
+                      dibuat_pada:
+                        type: string
+                        example: '2026-11-10 06:10:00'
+                      diubah_pada:
+                        type: string
+                        example: '2026-11-10 06:10:00'
+        403:
+          description: 'bukan admin'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Akses ditolak. Hanya admin yang boleh mengelola akun.'
+                properties:
+                  message:
+                    type: string
+                    example: 'Akses ditolak. Hanya admin yang boleh mengelola akun.'
+        422:
+          description: 'email duplikat'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Email sudah terdaftar.'
+                  errors:
+                    email:
+                      - 'Email sudah terdaftar.'
+                properties:
+                  message:
+                    type: string
+                    example: 'Email sudah terdaftar.'
+                  errors:
+                    type: object
+                    properties:
+                      email:
+                        type: array
+                        example:
+                          - 'Email sudah terdaftar.'
+                        items:
+                          type: string
+      tags:
+        - 'Akun (Kelola Pengguna)'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: 'Nama pengguna.'
+                  example: 'Budi Pengelola'
+                email:
+                  type: string
+                  description: 'Email unik.'
+                  example: budi@kdo.test
+                password:
+                  type: string
+                  description: 'Kata sandi (min. 8 karakter).'
+                  example: password123
+                role:
+                  type: string
+                  description: 'Role: admin, pengelola, atau pengguna.'
+                  example: pengelola
+              required:
+                - name
+                - email
+                - password
+                - role
+  '/api/v1/akun/{id}':
+    get:
+      summary: 'Detail akun pengguna'
+      operationId: detailAkunPengguna
+      description: 'Mengambil satu data akun berdasarkan ID. Hanya admin.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    id: 1
+                    name: 'Administrator KDO'
+                    email: admin@kdo.test
+                    role: admin
+                    dibuat_pada: '2026-11-10 06:00:00'
+                    diubah_pada: '2026-11-10 06:00:00'
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      name:
+                        type: string
+                        example: 'Administrator KDO'
+                      email:
+                        type: string
+                        example: admin@kdo.test
+                      role:
+                        type: string
+                        example: admin
+                      dibuat_pada:
+                        type: string
+                        example: '2026-11-10 06:00:00'
+                      diubah_pada:
+                        type: string
+                        example: '2026-11-10 06:00:00'
+        404:
+          description: 'tidak ditemukan'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Data tidak ditemukan.'
+                properties:
+                  message:
+                    type: string
+                    example: 'Data tidak ditemukan.'
+      tags:
+        - 'Akun (Kelola Pengguna)'
+    put:
+      summary: 'Ubah akun pengguna'
+      operationId: ubahAkunPengguna
+      description: "Memperbarui nama, email, role, dan/atau kata sandi akun. Kata sandi\nopsional — kosongkan bila tidak ingin mengubah. Role admin terakhir\ntidak dapat diturunkan (409). Hanya admin."
+      parameters: []
+      responses:
+        200:
+          description: sukses
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    id: 2
+                    name: 'Pengelola KDO'
+                    email: pengelola@kdo.test
+                    role: pengelola
+                    dibuat_pada: '2026-11-10 06:00:00'
+                    diubah_pada: '2026-11-10 06:15:00'
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 2
+                      name:
+                        type: string
+                        example: 'Pengelola KDO'
+                      email:
+                        type: string
+                        example: pengelola@kdo.test
+                      role:
+                        type: string
+                        example: pengelola
+                      dibuat_pada:
+                        type: string
+                        example: '2026-11-10 06:00:00'
+                      diubah_pada:
+                        type: string
+                        example: '2026-11-10 06:15:00'
+        409:
+          description: 'admin terakhir diturunkan'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Tidak dapat menurunkan role admin terakhir. Tambahkan admin lain terlebih dahulu.'
+                properties:
+                  message:
+                    type: string
+                    example: 'Tidak dapat menurunkan role admin terakhir. Tambahkan admin lain terlebih dahulu.'
+      tags:
+        - 'Akun (Kelola Pengguna)'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: 'Nama pengguna.'
+                  example: 'Pengelola KDO'
+                email:
+                  type: string
+                  description: 'Email unik.'
+                  example: pengelola@kdo.test
+                password:
+                  type: string
+                  description: 'Opsional, kata sandi baru (min. 8 karakter). Kosongkan bila tidak diubah.'
+                  example: passwordBaru
+                  nullable: true
+                role:
+                  type: string
+                  description: 'Role: admin, pengelola, atau pengguna.'
+                  example: pengelola
+              required:
+                - name
+                - email
+                - role
+    delete:
+      summary: 'Hapus akun pengguna'
+      operationId: hapusAkunPengguna
+      description: "Menghapus akun beserta token aktifnya. Tidak dapat menghapus akun\nyang sedang dipakai (409) atau admin terakhir (409). Hanya admin."
+      parameters: []
+      responses:
+        204:
+          description: sukses
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: ''
+        409:
+          description: ''
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  -
+                    description: 'akun sendiri'
+                    type: object
+                    example:
+                      message: 'Tidak dapat menghapus akun yang sedang Anda gunakan.'
+                    properties:
+                      message:
+                        type: string
+                        example: 'Tidak dapat menghapus akun yang sedang Anda gunakan.'
+                  -
+                    description: 'admin terakhir'
+                    type: object
+                    example:
+                      message: 'Tidak dapat menghapus admin terakhir.'
+                    properties:
+                      message:
+                        type: string
+                        example: 'Tidak dapat menghapus admin terakhir.'
+      tags:
+        - 'Akun (Kelola Pengguna)'
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'ID akun.'
+        example: 1
+        required: true
+        schema:
+          type: integer
+  '/api/v1/akun/{akun_id}':
+    patch:
+      summary: 'Ubah akun pengguna'
+      operationId: ubahAkunPengguna
+      description: "Memperbarui nama, email, role, dan/atau kata sandi akun. Kata sandi\nopsional — kosongkan bila tidak ingin mengubah. Role admin terakhir\ntidak dapat diturunkan (409). Hanya admin."
+      parameters: []
+      responses:
+        200:
+          description: sukses
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    id: 2
+                    name: 'Pengelola KDO'
+                    email: pengelola@kdo.test
+                    role: pengelola
+                    dibuat_pada: '2026-11-10 06:00:00'
+                    diubah_pada: '2026-11-10 06:15:00'
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 2
+                      name:
+                        type: string
+                        example: 'Pengelola KDO'
+                      email:
+                        type: string
+                        example: pengelola@kdo.test
+                      role:
+                        type: string
+                        example: pengelola
+                      dibuat_pada:
+                        type: string
+                        example: '2026-11-10 06:00:00'
+                      diubah_pada:
+                        type: string
+                        example: '2026-11-10 06:15:00'
+        409:
+          description: 'admin terakhir diturunkan'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Tidak dapat menurunkan role admin terakhir. Tambahkan admin lain terlebih dahulu.'
+                properties:
+                  message:
+                    type: string
+                    example: 'Tidak dapat menurunkan role admin terakhir. Tambahkan admin lain terlebih dahulu.'
+      tags:
+        - 'Akun (Kelola Pengguna)'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: 'Nama pengguna.'
+                  example: 'Pengelola KDO'
+                email:
+                  type: string
+                  description: 'Email unik.'
+                  example: pengelola@kdo.test
+                password:
+                  type: string
+                  description: 'Opsional, kata sandi baru (min. 8 karakter). Kosongkan bila tidak diubah.'
+                  example: passwordBaru
+                  nullable: true
+                role:
+                  type: string
+                  description: 'Role: admin, pengelola, atau pengguna.'
+                  example: pengelola
+              required:
+                - name
+                - email
+                - role
+    parameters:
+      -
+        in: path
+        name: akun_id
+        description: 'The ID of the akun.'
+        example: 1
+        required: true
+        schema:
+          type: integer
+      -
+        in: path
+        name: id
+        description: 'ID akun.'
+        example: 2
+        required: true
+        schema:
+          type: integer
   /api/v1/auth/login:
     post:
       summary: 'Login pengguna'
@@ -229,125 +745,18 @@ paths:
             description: 'Opsional, jumlah item per halaman (maks 100).'
             example: 15
       responses:
-        200:
+        401:
           description: ''
           content:
             application/json:
               schema:
                 type: object
                 example:
-                  data: []
-                  links:
-                    first: 'http://localhost:8000/api/v1/kendaraan?page=1'
-                    last: 'http://localhost:8000/api/v1/kendaraan?page=1'
-                    prev: null
-                    next: null
-                  meta:
-                    current_page: 1
-                    from: null
-                    last_page: 1
-                    links:
-                      -
-                        url: null
-                        label: '&laquo; Previous'
-                        page: null
-                        active: false
-                      -
-                        url: 'http://localhost:8000/api/v1/kendaraan?page=1'
-                        label: '1'
-                        page: 1
-                        active: true
-                      -
-                        url: null
-                        label: 'Next &raquo;'
-                        page: null
-                        active: false
-                    path: 'http://localhost:8000/api/v1/kendaraan'
-                    per_page: 15
-                    to: null
-                    total: 0
+                  message: 'Tidak terautentikasi. Sertakan token yang valid.'
                 properties:
-                  data:
-                    type: array
-                    example: []
-                  links:
-                    type: object
-                    properties:
-                      first:
-                        type: string
-                        example: 'http://localhost:8000/api/v1/kendaraan?page=1'
-                      last:
-                        type: string
-                        example: 'http://localhost:8000/api/v1/kendaraan?page=1'
-                      prev:
-                        type: string
-                        example: null
-                        nullable: true
-                      next:
-                        type: string
-                        example: null
-                        nullable: true
-                  meta:
-                    type: object
-                    properties:
-                      current_page:
-                        type: integer
-                        example: 1
-                      from:
-                        type: string
-                        example: null
-                        nullable: true
-                      last_page:
-                        type: integer
-                        example: 1
-                      links:
-                        type: array
-                        example:
-                          -
-                            url: null
-                            label: '&laquo; Previous'
-                            page: null
-                            active: false
-                          -
-                            url: 'http://localhost:8000/api/v1/kendaraan?page=1'
-                            label: '1'
-                            page: 1
-                            active: true
-                          -
-                            url: null
-                            label: 'Next &raquo;'
-                            page: null
-                            active: false
-                        items:
-                          type: object
-                          properties:
-                            url:
-                              type: string
-                              example: null
-                              nullable: true
-                            label:
-                              type: string
-                              example: '&laquo; Previous'
-                            page:
-                              type: string
-                              example: null
-                              nullable: true
-                            active:
-                              type: boolean
-                              example: false
-                      path:
-                        type: string
-                        example: 'http://localhost:8000/api/v1/kendaraan'
-                      per_page:
-                        type: integer
-                        example: 15
-                      to:
-                        type: string
-                        example: null
-                        nullable: true
-                      total:
-                        type: integer
-                        example: 0
+                  message:
+                    type: string
+                    example: 'Tidak terautentikasi. Sertakan token yang valid.'
       tags:
         - 'Kendaraan (KDO)'
     post:
@@ -465,98 +874,18 @@ paths:
       description: "Mengambil satu data kendaraan berdasarkan ID, termasuk perangkat daerah\npemilik dan penanggung jawab."
       parameters: []
       responses:
-        200:
+        401:
           description: ''
           content:
             application/json:
               schema:
                 type: object
                 example:
-                  data:
-                    id: 1
-                    nomor_polisi: 'DK 1234 AB'
-                    merek: Toyota
-                    tipe: 'Avanza 1.5 G'
-                    tahun_produksi: 2021
-                    warna: Putih
-                    kondisi: baik
-                    kondisi_label: Baik
-                    perangkat_daerah:
-                      id: 1
-                      kode: SETDA
-                      nama: 'Sekretariat Daerah'
-                    penanggung_jawab:
-                      id: 1
-                      nama: 'Budi Santoso'
-                      nip: '197504121998031001'
-                      jabatan: 'Kepala Bagian Umum'
-                      golongan: IV/b
-                    dibuat_pada: '2026-11-10 05:25:13'
-                    diubah_pada: '2026-11-10 05:25:13'
+                  message: 'Tidak terautentikasi. Sertakan token yang valid.'
                 properties:
-                  data:
-                    type: object
-                    properties:
-                      id:
-                        type: integer
-                        example: 1
-                      nomor_polisi:
-                        type: string
-                        example: 'DK 1234 AB'
-                      merek:
-                        type: string
-                        example: Toyota
-                      tipe:
-                        type: string
-                        example: 'Avanza 1.5 G'
-                      tahun_produksi:
-                        type: integer
-                        example: 2021
-                      warna:
-                        type: string
-                        example: Putih
-                      kondisi:
-                        type: string
-                        example: baik
-                      kondisi_label:
-                        type: string
-                        example: Baik
-                      perangkat_daerah:
-                        type: object
-                        properties:
-                          id:
-                            type: integer
-                            example: 1
-                          kode:
-                            type: string
-                            example: SETDA
-                          nama:
-                            type: string
-                            example: 'Sekretariat Daerah'
-                      penanggung_jawab:
-                        type: object
-                        properties:
-                          id:
-                            type: integer
-                            example: 1
-                          nama:
-                            type: string
-                            example: 'Budi Santoso'
-                          nip:
-                            type: string
-                            example: '197504121998031001'
-                          jabatan:
-                            type: string
-                            example: 'Kepala Bagian Umum'
-                          golongan:
-                            type: string
-                            example: IV/b
-                      dibuat_pada:
-                        type: string
-                        example: '2026-11-10 05:25:13'
-                      diubah_pada:
-                        type: string
-                        example: '2026-11-10 05:25:13'
+                  message:
+                    type: string
+                    example: 'Tidak terautentikasi. Sertakan token yang valid.'
       tags:
         - 'Kendaraan (KDO)'
     parameters:
@@ -607,7 +936,7 @@ paths:
                 kondisi:
                   type: string
                   description: ''
-                  example: rusak_ringan
+                  example: baik
                   enum:
                     - baik
                     - rusak_ringan
@@ -667,7 +996,7 @@ paths:
                 kondisi:
                   type: string
                   description: ''
-                  example: baik
+                  example: rusak_ringan
                   enum:
                     - baik
                     - rusak_ringan
@@ -952,188 +1281,18 @@ paths:
             description: 'Opsional, jumlah item per halaman (maks 100).'
             example: 15
       responses:
-        200:
+        401:
           description: ''
           content:
             application/json:
               schema:
                 type: object
                 example:
-                  data:
-                    -
-                      id: 1
-                      nama: 'Budi Santoso'
-                      nip: '197504121998031001'
-                      jabatan: 'Kepala Bagian Umum'
-                      golongan: IV/b
-                      perangkat_daerah:
-                        id: 1
-                        kode: SETDA
-                        nama: 'Sekretariat Daerah'
-                      jumlah_kendaraan_ditangani: 1
-                      dibuat_pada: '2026-11-10 05:25:13'
-                      diubah_pada: '2026-11-10 05:25:13'
-                  links:
-                    first: 'http://localhost:8000/api/v1/pegawai?page=1'
-                    last: 'http://localhost:8000/api/v1/pegawai?page=1'
-                    prev: null
-                    next: null
-                  meta:
-                    current_page: 1
-                    from: 1
-                    last_page: 1
-                    links:
-                      -
-                        url: null
-                        label: '&laquo; Previous'
-                        page: null
-                        active: false
-                      -
-                        url: 'http://localhost:8000/api/v1/pegawai?page=1'
-                        label: '1'
-                        page: 1
-                        active: true
-                      -
-                        url: null
-                        label: 'Next &raquo;'
-                        page: null
-                        active: false
-                    path: 'http://localhost:8000/api/v1/pegawai'
-                    per_page: 15
-                    to: 1
-                    total: 1
+                  message: 'Tidak terautentikasi. Sertakan token yang valid.'
                 properties:
-                  data:
-                    type: array
-                    example:
-                      -
-                        id: 1
-                        nama: 'Budi Santoso'
-                        nip: '197504121998031001'
-                        jabatan: 'Kepala Bagian Umum'
-                        golongan: IV/b
-                        perangkat_daerah:
-                          id: 1
-                          kode: SETDA
-                          nama: 'Sekretariat Daerah'
-                        jumlah_kendaraan_ditangani: 1
-                        dibuat_pada: '2026-11-10 05:25:13'
-                        diubah_pada: '2026-11-10 05:25:13'
-                    items:
-                      type: object
-                      properties:
-                        id:
-                          type: integer
-                          example: 1
-                        nama:
-                          type: string
-                          example: 'Budi Santoso'
-                        nip:
-                          type: string
-                          example: '197504121998031001'
-                        jabatan:
-                          type: string
-                          example: 'Kepala Bagian Umum'
-                        golongan:
-                          type: string
-                          example: IV/b
-                        perangkat_daerah:
-                          type: object
-                          properties:
-                            id:
-                              type: integer
-                              example: 1
-                            kode:
-                              type: string
-                              example: SETDA
-                            nama:
-                              type: string
-                              example: 'Sekretariat Daerah'
-                        jumlah_kendaraan_ditangani:
-                          type: integer
-                          example: 1
-                        dibuat_pada:
-                          type: string
-                          example: '2026-11-10 05:25:13'
-                        diubah_pada:
-                          type: string
-                          example: '2026-11-10 05:25:13'
-                  links:
-                    type: object
-                    properties:
-                      first:
-                        type: string
-                        example: 'http://localhost:8000/api/v1/pegawai?page=1'
-                      last:
-                        type: string
-                        example: 'http://localhost:8000/api/v1/pegawai?page=1'
-                      prev:
-                        type: string
-                        example: null
-                        nullable: true
-                      next:
-                        type: string
-                        example: null
-                        nullable: true
-                  meta:
-                    type: object
-                    properties:
-                      current_page:
-                        type: integer
-                        example: 1
-                      from:
-                        type: integer
-                        example: 1
-                      last_page:
-                        type: integer
-                        example: 1
-                      links:
-                        type: array
-                        example:
-                          -
-                            url: null
-                            label: '&laquo; Previous'
-                            page: null
-                            active: false
-                          -
-                            url: 'http://localhost:8000/api/v1/pegawai?page=1'
-                            label: '1'
-                            page: 1
-                            active: true
-                          -
-                            url: null
-                            label: 'Next &raquo;'
-                            page: null
-                            active: false
-                        items:
-                          type: object
-                          properties:
-                            url:
-                              type: string
-                              example: null
-                              nullable: true
-                            label:
-                              type: string
-                              example: '&laquo; Previous'
-                            page:
-                              type: string
-                              example: null
-                              nullable: true
-                            active:
-                              type: boolean
-                              example: false
-                      path:
-                        type: string
-                        example: 'http://localhost:8000/api/v1/pegawai'
-                      per_page:
-                        type: integer
-                        example: 15
-                      to:
-                        type: integer
-                        example: 1
-                      total:
-                        type: integer
-                        example: 1
+                  message:
+                    type: string
+                    example: 'Tidak terautentikasi. Sertakan token yang valid.'
       tags:
         - 'Pegawai (PNS)'
     post:
@@ -1232,66 +1391,18 @@ paths:
       description: "Mengambil satu data pegawai berdasarkan ID, termasuk perangkat daerah dan\njumlah kendaraan yang ditangani."
       parameters: []
       responses:
-        200:
+        401:
           description: ''
           content:
             application/json:
               schema:
                 type: object
                 example:
-                  data:
-                    id: 1
-                    nama: 'Budi Santoso'
-                    nip: '197504121998031001'
-                    jabatan: 'Kepala Bagian Umum'
-                    golongan: IV/b
-                    perangkat_daerah:
-                      id: 1
-                      kode: SETDA
-                      nama: 'Sekretariat Daerah'
-                    jumlah_kendaraan_ditangani: 1
-                    dibuat_pada: '2026-11-10 05:25:13'
-                    diubah_pada: '2026-11-10 05:25:13'
+                  message: 'Tidak terautentikasi. Sertakan token yang valid.'
                 properties:
-                  data:
-                    type: object
-                    properties:
-                      id:
-                        type: integer
-                        example: 1
-                      nama:
-                        type: string
-                        example: 'Budi Santoso'
-                      nip:
-                        type: string
-                        example: '197504121998031001'
-                      jabatan:
-                        type: string
-                        example: 'Kepala Bagian Umum'
-                      golongan:
-                        type: string
-                        example: IV/b
-                      perangkat_daerah:
-                        type: object
-                        properties:
-                          id:
-                            type: integer
-                            example: 1
-                          kode:
-                            type: string
-                            example: SETDA
-                          nama:
-                            type: string
-                            example: 'Sekretariat Daerah'
-                      jumlah_kendaraan_ditangani:
-                        type: integer
-                        example: 1
-                      dibuat_pada:
-                        type: string
-                        example: '2026-11-10 05:25:13'
-                      diubah_pada:
-                        type: string
-                        example: '2026-11-10 05:25:13'
+                  message:
+                    type: string
+                    example: 'Tidak terautentikasi. Sertakan token yang valid.'
       tags:
         - 'Pegawai (PNS)'
     parameters:
@@ -1445,211 +1556,18 @@ paths:
             description: 'Opsional, jumlah item per halaman (maks 100).'
             example: 15
       responses:
-        200:
+        401:
           description: ''
           content:
             application/json:
               schema:
                 type: object
                 example:
-                  data:
-                    -
-                      id: 3
-                      kode: DINKES
-                      nama: 'Dinas Kesehatan'
-                      jumlah_pegawai: 2
-                      jumlah_kendaraan: 3
-                      dibuat_pada: '2026-11-10 05:25:13'
-                      diubah_pada: '2026-11-10 05:25:13'
-                    -
-                      id: 2
-                      kode: DISDIK
-                      nama: 'Dinas Pendidikan'
-                      jumlah_pegawai: 3
-                      jumlah_kendaraan: 3
-                      dibuat_pada: '2026-11-10 05:25:13'
-                      diubah_pada: '2026-11-10 05:25:13'
-                    -
-                      id: 4
-                      kode: DISHUB
-                      nama: 'Dinas Perhubungan'
-                      jumlah_pegawai: 2
-                      jumlah_kendaraan: 3
-                      dibuat_pada: '2026-11-10 05:25:13'
-                      diubah_pada: '2026-11-10 05:25:13'
-                    -
-                      id: 5
-                      kode: DPUPR
-                      nama: 'Dinas Pekerjaan Umum dan Penataan Ruang'
-                      jumlah_pegawai: 2
-                      jumlah_kendaraan: 2
-                      dibuat_pada: '2026-11-10 05:25:13'
-                      diubah_pada: '2026-11-10 05:25:13'
-                  links:
-                    first: 'http://localhost:8000/api/v1/perangkat-daerah?page=1'
-                    last: 'http://localhost:8000/api/v1/perangkat-daerah?page=1'
-                    prev: null
-                    next: null
-                  meta:
-                    current_page: 1
-                    from: 1
-                    last_page: 1
-                    links:
-                      -
-                        url: null
-                        label: '&laquo; Previous'
-                        page: null
-                        active: false
-                      -
-                        url: 'http://localhost:8000/api/v1/perangkat-daerah?page=1'
-                        label: '1'
-                        page: 1
-                        active: true
-                      -
-                        url: null
-                        label: 'Next &raquo;'
-                        page: null
-                        active: false
-                    path: 'http://localhost:8000/api/v1/perangkat-daerah'
-                    per_page: 15
-                    to: 4
-                    total: 4
+                  message: 'Tidak terautentikasi. Sertakan token yang valid.'
                 properties:
-                  data:
-                    type: array
-                    example:
-                      -
-                        id: 3
-                        kode: DINKES
-                        nama: 'Dinas Kesehatan'
-                        jumlah_pegawai: 2
-                        jumlah_kendaraan: 3
-                        dibuat_pada: '2026-11-10 05:25:13'
-                        diubah_pada: '2026-11-10 05:25:13'
-                      -
-                        id: 2
-                        kode: DISDIK
-                        nama: 'Dinas Pendidikan'
-                        jumlah_pegawai: 3
-                        jumlah_kendaraan: 3
-                        dibuat_pada: '2026-11-10 05:25:13'
-                        diubah_pada: '2026-11-10 05:25:13'
-                      -
-                        id: 4
-                        kode: DISHUB
-                        nama: 'Dinas Perhubungan'
-                        jumlah_pegawai: 2
-                        jumlah_kendaraan: 3
-                        dibuat_pada: '2026-11-10 05:25:13'
-                        diubah_pada: '2026-11-10 05:25:13'
-                      -
-                        id: 5
-                        kode: DPUPR
-                        nama: 'Dinas Pekerjaan Umum dan Penataan Ruang'
-                        jumlah_pegawai: 2
-                        jumlah_kendaraan: 2
-                        dibuat_pada: '2026-11-10 05:25:13'
-                        diubah_pada: '2026-11-10 05:25:13'
-                    items:
-                      type: object
-                      properties:
-                        id:
-                          type: integer
-                          example: 3
-                        kode:
-                          type: string
-                          example: DINKES
-                        nama:
-                          type: string
-                          example: 'Dinas Kesehatan'
-                        jumlah_pegawai:
-                          type: integer
-                          example: 2
-                        jumlah_kendaraan:
-                          type: integer
-                          example: 3
-                        dibuat_pada:
-                          type: string
-                          example: '2026-11-10 05:25:13'
-                        diubah_pada:
-                          type: string
-                          example: '2026-11-10 05:25:13'
-                  links:
-                    type: object
-                    properties:
-                      first:
-                        type: string
-                        example: 'http://localhost:8000/api/v1/perangkat-daerah?page=1'
-                      last:
-                        type: string
-                        example: 'http://localhost:8000/api/v1/perangkat-daerah?page=1'
-                      prev:
-                        type: string
-                        example: null
-                        nullable: true
-                      next:
-                        type: string
-                        example: null
-                        nullable: true
-                  meta:
-                    type: object
-                    properties:
-                      current_page:
-                        type: integer
-                        example: 1
-                      from:
-                        type: integer
-                        example: 1
-                      last_page:
-                        type: integer
-                        example: 1
-                      links:
-                        type: array
-                        example:
-                          -
-                            url: null
-                            label: '&laquo; Previous'
-                            page: null
-                            active: false
-                          -
-                            url: 'http://localhost:8000/api/v1/perangkat-daerah?page=1'
-                            label: '1'
-                            page: 1
-                            active: true
-                          -
-                            url: null
-                            label: 'Next &raquo;'
-                            page: null
-                            active: false
-                        items:
-                          type: object
-                          properties:
-                            url:
-                              type: string
-                              example: null
-                              nullable: true
-                            label:
-                              type: string
-                              example: '&laquo; Previous'
-                            page:
-                              type: string
-                              example: null
-                              nullable: true
-                            active:
-                              type: boolean
-                              example: false
-                      path:
-                        type: string
-                        example: 'http://localhost:8000/api/v1/perangkat-daerah'
-                      per_page:
-                        type: integer
-                        example: 15
-                      to:
-                        type: integer
-                        example: 4
-                      total:
-                        type: integer
-                        example: 4
+                  message:
+                    type: string
+                    example: 'Tidak terautentikasi. Sertakan token yang valid.'
       tags:
         - 'Perangkat Daerah (PD)'
     post:
@@ -1733,46 +1651,18 @@ paths:
       description: 'Mengambil satu data perangkat daerah berdasarkan ID.'
       parameters: []
       responses:
-        200:
+        401:
           description: ''
           content:
             application/json:
               schema:
                 type: object
                 example:
-                  data:
-                    id: 1
-                    kode: SETDA
-                    nama: 'Sekretariat Daerah'
-                    jumlah_pegawai: 2
-                    jumlah_kendaraan: 2
-                    dibuat_pada: '2026-11-10 05:25:12'
-                    diubah_pada: '2026-11-10 05:25:12'
+                  message: 'Tidak terautentikasi. Sertakan token yang valid.'
                 properties:
-                  data:
-                    type: object
-                    properties:
-                      id:
-                        type: integer
-                        example: 1
-                      kode:
-                        type: string
-                        example: SETDA
-                      nama:
-                        type: string
-                        example: 'Sekretariat Daerah'
-                      jumlah_pegawai:
-                        type: integer
-                        example: 2
-                      jumlah_kendaraan:
-                        type: integer
-                        example: 2
-                      dibuat_pada:
-                        type: string
-                        example: '2026-11-10 05:25:12'
-                      diubah_pada:
-                        type: string
-                        example: '2026-11-10 05:25:12'
+                  message:
+                    type: string
+                    example: 'Tidak terautentikasi. Sertakan token yang valid.'
         404:
           description: 'tidak ditemukan'
           content:
